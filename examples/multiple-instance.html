@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Green Audio Player</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="../dist/css/main.min.css">
+    <style>
+        html, body { height: 100%; }
+
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #F8FFAE;
+            background: -webkit-linear-gradient(-65deg, #43C6AC, #F8FFAE);
+            background: linear-gradient(-65deg, #43C6AC, #F8FFAE);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .ready-player-1, .ready-player-2 {
+            margin: 24px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="ready-player-1">
+        <audio crossorigin>
+            <source src="audio/example-1.mp3" type="audio/mpeg">
+        </audio>
+    </div>
+    <div class="ready-player-2">
+        <audio crossorigin>
+            <source src="audio/example-2.mp3" type="audio/mpeg">
+        </audio>
+    </div>
+
+    <script src="../dist/js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            new GreenAudioPlayer('.ready-player-1');
+            new GreenAudioPlayer('.ready-player-2');
+        });
+    </script>
+</body>
+</html>

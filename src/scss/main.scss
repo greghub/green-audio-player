@@ -1,0 +1,160 @@
+@import "variables";
+@import "animations";
+
+.green-audio-player {
+	width: 400px;
+	min-width: 300px;
+	height: 56px;
+	box-shadow: 0 4px 16px 0 $shadow-light;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding-left: 24px;
+	padding-right: 24px;
+	border-radius: 4px;
+	user-select: none;
+	background-color: $white;
+
+	svg,
+	img {
+		display: block;
+	}
+
+	.play-pause-btn {
+		display: none;
+		cursor: pointer;
+	}
+
+	.loading {
+		.loading__spinner {
+			width: 16px;
+			height: 16px;
+			border: 2px solid $light-gray;
+			border-right-color: transparent;
+			border-radius: 50%;
+			animation: spin 0.4s linear infinite;
+		}
+	}
+
+	.slider {
+		flex-grow: 1;
+		background-color: $lighter-gray;
+		cursor: pointer;
+		position: relative;
+
+		.progress {
+			background-color: $primary;
+			border-radius: inherit;
+			position: absolute;
+			pointer-events: none;
+
+			.pin {
+				height: 16px;
+				width: 16px;
+				border-radius: 8px;
+				background-color: $primary;
+				position: absolute;
+				pointer-events: all;
+				box-shadow: 0 1px 1px 0 $shadow-medium;
+			}
+		}
+	}
+
+	.controls {
+		font-family: "Roboto", sans-serif;
+		font-size: 16px;
+		line-height: 18px;
+		color: $text;
+		display: flex;
+		flex-grow: 1;
+		justify-content: space-between;
+		align-items: center;
+		margin-left: 24px;
+		margin-right: 24px;
+
+		.controls__slider {
+			margin-left: 16px;
+			margin-right: 16px;
+			border-radius: 2px;
+			height: 4px;
+
+			.controls__progress {
+				width: 0;
+				height: 100%;
+
+				.progress__pin {
+					right: -8px;
+					top: -6px;
+				}
+			}
+		}
+
+		span {
+			cursor: default;
+		}
+	}
+
+	.volume {
+		position: relative;
+
+		.volume__button {
+			cursor: pointer;
+
+			&.open {
+				path {
+					fill: $primary;
+				}
+			}
+		}
+
+		.volume__controls {
+			width: 30px;
+			height: 135px;
+			background-color: $shadow-dark;
+			border-radius: 7px;
+			position: absolute;
+			left: -3px;
+			bottom: 52px;
+			flex-direction: column;
+			align-items: center;
+			display: flex;
+
+			&.hidden {
+				display: none;
+			}
+
+			&.top {
+				bottom: 52px;
+				left: -3px;
+			}
+
+			&.middle {
+				bottom: -54px;
+				left: 54px;
+			}
+
+			&.bottom {
+				bottom: -164px;
+				left: -3px;
+			}
+
+			.volume__slider {
+				margin-top: 12px;
+				margin-bottom: 12px;
+				width: 6px;
+				border-radius: 3px;
+
+				.volume__progress {
+					bottom: 0;
+					height: 100%;
+					width: 6px;
+
+					.volume__pin {
+						left: -5px;
+						top: -8px;
+					}
+				}
+			}
+		}
+	}
+}
