@@ -81,6 +81,24 @@ class GreenAudioPlayer {
             }
         });
 
+        // for mobile touches
+        self.audioPlayer.addEventListener('touchstart', (event) => {
+            if (self.isDraggable(event.target)) {
+                [self.currentlyDragged] = event.targetTouches;
+
+                const handleMethod = self.currentlyDragged.target.dataset.method;
+                const listener = self[handleMethod].bind(self);
+
+                window.addEventListener('touchmove', listener, false);
+                window.addEventListener('touchend', () => {
+                    self.currentlyDragged = false;
+                    window.removeEventListener('touchmove', listener, false);
+                }, false);
+
+                event.preventDefault();
+            }
+        });
+
         this.playPauseBtn.addEventListener('click', this.togglePlay.bind(self));
         this.player.addEventListener('timeupdate', this.updateProgress.bind(self));
         this.player.addEventListener('volumechange', this.updateVolume.bind(self));
@@ -160,22 +178,31 @@ class GreenAudioPlayer {
 
     getRangeBox(event) {
         let rangeBox = event.target;
-        const el = this.currentlyDragged;
+        let el = this.currentlyDragged;
         if (event.type === 'click' && this.isDraggable(event.target)) {
             rangeBox = event.target.parentElement.parentElement;
         }
         if (event.type === 'mousemove') {
             rangeBox = el.parentElement.parentElement;
         }
+        if (event.type === 'touchmove') {
+            el = el.target;
+            rangeBox = el.parentElement.parentElement;
+        }
         return rangeBox;
     }
 
+
     getCoefficient(event) {
+        const touch = ('touches' in event); // instanceof TouchEvent may also be used
+
         const slider = this.getRangeBox(event);
         const rect = slider.getBoundingClientRect();
         let K = 0;
         if (slider.dataset.direction === 'horizontal') {
-            const offsetX = event.clientX - slider.offsetLeft;
+            // if event is touch
+            const clientX = touch ? event.touches[0].clientX : event.clientX;
+            const offsetX = clientX - slider.offsetLeft;
             const width = slider.clientWidth;
             K = offsetX / width;
         } else if (slider.dataset.direction === 'vertical') {

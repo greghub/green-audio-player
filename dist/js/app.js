@@ -1,5 +1,13 @@
 "use strict";
 
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -50,6 +58,22 @@ function () {
             self.currentlyDragged = false;
             window.removeEventListener('mousemove', listener, false);
           }, false);
+        }
+      }); // for mobile touches
+
+      self.audioPlayer.addEventListener('touchstart', function (event) {
+        if (self.isDraggable(event.target)) {
+          var _event$targetTouches = _slicedToArray(event.targetTouches, 1);
+
+          self.currentlyDragged = _event$targetTouches[0];
+          var handleMethod = self.currentlyDragged.target.dataset.method;
+          var listener = self[handleMethod].bind(self);
+          window.addEventListener('touchmove', listener, false);
+          window.addEventListener('touchend', function () {
+            self.currentlyDragged = false;
+            window.removeEventListener('touchmove', listener, false);
+          }, false);
+          event.preventDefault();
         }
       });
       this.playPauseBtn.addEventListener('click', this.togglePlay.bind(self));
@@ -143,17 +167,26 @@ function () {
         rangeBox = el.parentElement.parentElement;
       }
 
+      if (event.type === 'touchmove') {
+        el = el.target;
+        rangeBox = el.parentElement.parentElement;
+      }
+
       return rangeBox;
     }
   }, {
     key: "getCoefficient",
     value: function getCoefficient(event) {
+      var touch = 'touches' in event; // instanceof TouchEvent may also be used
+
       var slider = this.getRangeBox(event);
       var rect = slider.getBoundingClientRect();
       var K = 0;
 
       if (slider.dataset.direction === 'horizontal') {
-        var offsetX = event.clientX - slider.offsetLeft;
+        // if event is touch
+        var clientX = touch ? event.touches[0].clientX : event.clientX;
+        var offsetX = clientX - slider.offsetLeft;
         var width = slider.clientWidth;
         K = offsetX / width;
       } else if (slider.dataset.direction === 'vertical') {
