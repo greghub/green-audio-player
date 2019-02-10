@@ -139,6 +139,7 @@ class GreenAudioPlayer {
     }
 
     inRange(event) {
+        const touch = ('touches' in event); // instanceof TouchEvent may also be used
         const rangeBox = this.getRangeBox(event);
         const rect = rangeBox.getBoundingClientRect();
         const { dataset: { direction } } = rangeBox;
@@ -148,11 +149,13 @@ class GreenAudioPlayer {
         if (direction === 'horizontal') {
             min = rangeBox.offsetLeft;
             max = min + rangeBox.offsetWidth;
-            if (event.clientX < min || event.clientX > max) return false;
+            const clientX = touch ? event.touches[0].clientX : event.clientX;
+            if (clientX < min || clientX > max) return false;
         } else {
             min = rect.top;
             max = min + rangeBox.offsetHeight;
-            if (event.clientY < min || event.clientY > max) return false;
+            const clientY = touch ? event.touches[0].clientY : event.clientY;
+            if (clientY < min || clientY > max) return false;
         }
         return true;
     }
@@ -186,8 +189,7 @@ class GreenAudioPlayer {
             rangeBox = el.parentElement.parentElement;
         }
         if (event.type === 'touchmove') {
-            el = el.target;
-            rangeBox = el.parentElement.parentElement;
+            rangeBox = el.target.parentElement.parentElement;
         }
         return rangeBox;
     }
@@ -207,7 +209,8 @@ class GreenAudioPlayer {
             K = offsetX / width;
         } else if (slider.dataset.direction === 'vertical') {
             const height = slider.clientHeight;
-            const offsetY = event.clientY - rect.top;
+            const clientY = touch ? event.touches[0].clientY : event.clientY;
+            const offsetY = clientY - rect.top;
             K = 1 - offsetY / height;
         }
         return K;
