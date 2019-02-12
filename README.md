@@ -18,6 +18,13 @@ and `app.js` file:
 <script src="{path}/dist/js/app.js"></script>
 ```
 
+Alternatively, you can load it from CDN:
+
+```html
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/greghub/green-audio-player/dist/css/main.min.css">
+<script src="https://cdn.jsdelivr.net/gh/greghub/green-audio-player/dist/js/app.js"></script>
+```
+
 Add the audio tag inside of a container. You are free to add any attributes.
 Green Audio Player does not change the audio tag, so for example if you want the audio to loop,
 you can add the loop attribute to the audio tag.
