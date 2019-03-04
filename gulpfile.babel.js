@@ -5,9 +5,13 @@ import sass from 'gulp-sass';
 import postcss from 'gulp-postcss';
 import cssnano from 'cssnano';
 import autoprefixer from 'autoprefixer';
-import babel from 'gulp-babel';
 import eslint from 'gulp-eslint';
 import sasslint from 'gulp-sass-lint';
+import browserify from 'browserify';
+import babelify from 'babelify';
+import source from 'vinyl-source-stream';
+import streamify from 'gulp-streamify';
+import uglify from 'gulp-uglify';
 
 const server = browserSync.create();
 
@@ -15,8 +19,9 @@ const styles = () => {
     const plugins = [autoprefixer({ browsers: ['last 2 versions'] }), cssnano()];
 
     return (
-        gulp.src('./src/scss/**/*.scss')
+        gulp.src(['./src/scss/main.scss']) // add multiple sass files
             .pipe(sass().on('error', sass.logError))
+            .pipe(rename({ basename: 'green-audio-player' }))
             .pipe(gulp.dest('./dist/css'))
             .pipe(postcss(plugins))
             .pipe(rename({ suffix: '.min' }))
@@ -25,11 +30,15 @@ const styles = () => {
     );
 };
 
-const scripts = () => gulp.src('src/js/main.js')
-    .pipe(babel({
-        presets: ['@babel/preset-env'],
-    }))
-    .pipe(rename('app.js'))
+const scripts = () => browserify({
+    entries: './src/js/main.js',
+    standalone: 'GreenAudioPlayer'
+}).transform(babelify, { presets: ['@babel/preset-env'] })
+    .bundle()
+    .pipe(source('green-audio-player.js')) // library-name.js
+    .pipe(gulp.dest('dist/js'))
+    .pipe(streamify(uglify()))
+    .pipe(rename({ suffix: '.min' }))
     .pipe(gulp.dest('dist/js'))
     .pipe(server.stream());
 
@@ -43,8 +52,8 @@ const stylesLint = () => gulp.src('./src/scss/**/*.scss')
 
 const startServer = () => server.init({
     server: {
-        baseDir: './',
-    },
+        baseDir: './'
+    }
 });
 
 const watchHTML = () => gulp.watch('./*.html').on('change', server.reload);
@@ -69,7 +78,5 @@ export {
     serve,
     watch,
     compile,
-    lint,
+    lint
 };
-
-export default defaultTasks;
