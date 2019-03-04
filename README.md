@@ -1,10 +1,39 @@
 # Green Audio Player
 
+![npm](https://img.shields.io/npm/v/green-audio-player.svg)
+![GitHub](https://img.shields.io/github/license/greghub/green-audio-player.svg)
+![GitHub file size in bytes](https://img.shields.io/github/size/greghub/green-audio-player/dist/js/app.js.svg)
+![GitHub last commit](https://img.shields.io/github/last-commit/greghub/green-audio-player.svg)
+
+
 Based on a [pen](https://codepen.io/gregh/pen/NdVvbm) I've created 2 years ago.
 Due to requests from many people I decided to create a repository, 
 containing an improved version of the Green Audio Player including the support for multiple audio players on a single page.
 
-#### [Online demo](https://codepen.io/gregh/full/NdVvbm)
+## [Online demo](https://codepen.io/gregh/full/NdVvbm)
+
+<img src="https://i.imgur.com/CME3A0L.png" alt="Green Audio Player" width="680">
+
+## Installation
+
+#### Github
+
+Download repository ZIP.
+
+#### CDN
+
+Alternatively, you can load it from CDN:
+
+```html
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/greghub/green-audio-player/dist/css/green-audio-player.min.css">
+<script src="https://cdn.jsdelivr.net/gh/greghub/green-audio-player/dist/js/green-audio-player.min.js"></script>
+```
+
+#### NPM
+
+```
+npm i green-audio-player
+```
 
 ## Usage
 
@@ -16,13 +45,6 @@ Include the `green-audio-player.css` or `green-audio-player.min.css` file:
 and `green-audio-player.js` file (or `green-audio-player.min.js`): 
 ```html
 <script src="{path}/dist/js/green-audio-player.js"></script>
-```
-
-Alternatively, you can load it from CDN:
-
-```html
-<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/greghub/green-audio-player/dist/css/main.min.css">
-<script src="https://cdn.jsdelivr.net/gh/greghub/green-audio-player/dist/js/green-audio-player.min.js"></script>
 ```
 
 Add the audio tag inside of a container. You are free to add any attributes.
