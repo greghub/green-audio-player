@@ -8,21 +8,21 @@ containing an improved version of the Green Audio Player including the support f
 
 ## Usage
 
-Include the `main.css` or `main.min.css` file:
+Include the `green-audio-player.css` or `green-audio-player.min.css` file:
 
 ```html
-<link rel="stylesheet" type="text/css" href="{path}/dist/css/main.min.css">
+<link rel="stylesheet" type="text/css" href="{path}/dist/css/green-audio-player.min.css">
 ```
-and `app.js` file: 
+and `green-audio-player.js` file (or `green-audio-player.min.js`): 
 ```html
-<script src="{path}/dist/js/app.js"></script>
+<script src="{path}/dist/js/green-audio-player.js"></script>
 ```
 
 Alternatively, you can load it from CDN:
 
 ```html
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/greghub/green-audio-player/dist/css/main.min.css">
-<script src="https://cdn.jsdelivr.net/gh/greghub/green-audio-player/dist/js/app.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/greghub/green-audio-player/dist/js/green-audio-player.min.js"></script>
 ```
 
 Add the audio tag inside of a container. You are free to add any attributes.
