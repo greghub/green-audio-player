@@ -267,4 +267,4 @@ class GreenAudioPlayer {
     }
 }
 
-window.GreenAudioPlayer = GreenAudioPlayer;
+export default GreenAudioPlayer;

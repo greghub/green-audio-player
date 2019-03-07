@@ -31,7 +31,7 @@ const styles = () => {
 };
 
 const scripts = () => browserify({
-    entries: './src/js/main.js',
+    entries: './index.js',
     standalone: 'GreenAudioPlayer'
 }).transform(babelify, { presets: ['@babel/preset-env'] })
     .bundle()
@@ -80,3 +80,5 @@ export {
     compile,
     lint
 };
+
+export default defaultTasks;
