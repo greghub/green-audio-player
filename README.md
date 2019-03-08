@@ -2,7 +2,7 @@
 
 ![npm](https://img.shields.io/npm/v/green-audio-player.svg)
 ![GitHub](https://img.shields.io/github/license/greghub/green-audio-player.svg)
-![GitHub file size in bytes](https://img.shields.io/github/size/greghub/green-audio-player/dist/js/app.js.svg)
+![GitHub file size in bytes](https://img.shields.io/github/size/greghub/green-audio-player/dist/js/green-audio-player.min.js.svg)
 ![GitHub last commit](https://img.shields.io/github/last-commit/greghub/green-audio-player.svg)
 
 
