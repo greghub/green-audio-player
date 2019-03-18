@@ -1,6 +1,6 @@
 {
   "name": "green-audio-player",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Green Audio Player",
   "main": "main.js",
   "scripts": {
@@ -35,5 +35,15 @@
     "gulp-util": "^3.0.8",
     "mocha": "^5.2.0",
     "vinyl-source-stream": "^2.0.0"
-  }
+  },
+  "keywords": [
+    "audio-player",
+    "green-audio-player",
+    "ui-audio",
+    "audio-player-library",
+    "audio-js",
+    "javascript-audio",
+    "podcast-player",
+    "music-player"
+  ]
 }
