@@ -35,12 +35,12 @@
     background-color: #d8d8d8;
     cursor: pointer;
     position: relative; }
-    .green-audio-player .slider .progress {
+    .green-audio-player .slider .gap-progress {
       background-color: #44bfa3;
       border-radius: inherit;
       position: absolute;
       pointer-events: none; }
-      .green-audio-player .slider .progress .pin {
+      .green-audio-player .slider .gap-progress .pin {
         height: 16px;
         width: 16px;
         border-radius: 8px;
