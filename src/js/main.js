@@ -1,5 +1,5 @@
 class GreenAudioPlayer {
-    constructor(player) {
+    constructor(player, options) {
         this.audioPlayer = document.querySelector(player);
 
         const audioElement = this.audioPlayer.innerHTML;
@@ -20,6 +20,7 @@ class GreenAudioPlayer {
         this.speaker = this.audioPlayer.querySelector('.volume__speaker');
         this.draggableClasses = ['pin'];
         this.currentlyDragged = null;
+        this.stopOthersOnPlay = options.stopOthersOnPlay;
 
         this.initEvents();
         this.directionAware();
@@ -236,12 +237,31 @@ class GreenAudioPlayer {
 
     togglePlay() {
         if (this.player.paused) {
-            this.playPause.attributes.d.value = 'M0 0h6v24H0zM12 0h6v24h-6z';
-            this.player.play();
+            if (this.stopOthersOnPlay) {
+                GreenAudioPlayer.stopOtherPlayers();
+            }
+            GreenAudioPlayer.playPlayer(this.player);
         } else {
-            this.playPause.attributes.d.value = 'M18 12L0 24V0';
-            this.player.pause();
+            GreenAudioPlayer.pausePlayer(this.player);
         }
+    }
+
+    static pausePlayer(player) {
+        const playPauseButton = player.closest('.green-audio-player').querySelector('.play-pause-btn__icon');
+        playPauseButton.attributes.d.value = 'M18 12L0 24V0';
+        player.pause();
+    }
+
+    static playPlayer(player) {
+        const playPauseButton = player.closest('.green-audio-player').querySelector('.play-pause-btn__icon');
+        playPauseButton.attributes.d.value = 'M0 0h6v24H0zM12 0h6v24h-6z';
+        player.play();
+    }
+
+    static stopOtherPlayers() {
+        document.querySelectorAll('.green-audio-player audio').forEach((player) => {
+            GreenAudioPlayer.pausePlayer(player);
+        });
     }
 
     showLoadingIndicator() {

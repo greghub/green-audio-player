@@ -41,8 +41,8 @@
     <script src="../dist/js/green-audio-player.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            new GreenAudioPlayer('.ready-player-1');
-            new GreenAudioPlayer('.ready-player-2');
+            new GreenAudioPlayer('.ready-player-1', { stopOthersOnPlay: true });
+            new GreenAudioPlayer('.ready-player-2', { stopOthersOnPlay: true });
         });
     </script>
 </body>

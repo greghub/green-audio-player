@@ -66,3 +66,9 @@ new GreenAudioPlayer('.gap-example');
 
 You can add multiple players on a single page.
 Refer to `/examples` folder for demos of single and multiple players.
+
+## Options
+
+| Option | Description | Values | Default |
+|--------|-------------|--------|---------|
+| stopOthersOnPlay | Whether other audio players shall get paused when hitting play | `true`, `false` | `false`

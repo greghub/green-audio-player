@@ -28,7 +28,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 var GreenAudioPlayer =
 /*#__PURE__*/
 function () {
-  function GreenAudioPlayer(player) {
+  function GreenAudioPlayer(player, options) {
     _classCallCheck(this, GreenAudioPlayer);
 
     this.audioPlayer = document.querySelector(player);
@@ -49,6 +49,7 @@ function () {
     this.speaker = this.audioPlayer.querySelector('.volume__speaker');
     this.draggableClasses = ['pin'];
     this.currentlyDragged = null;
+    this.stopOthersOnPlay = options.stopOthersOnPlay;
     this.initEvents();
     this.directionAware();
   }
@@ -230,11 +231,13 @@ function () {
     key: "togglePlay",
     value: function togglePlay() {
       if (this.player.paused) {
-        this.playPause.attributes.d.value = 'M0 0h6v24H0zM12 0h6v24h-6z';
-        this.player.play();
+        if (this.stopOthersOnPlay) {
+          GreenAudioPlayer.stopOtherPlayers();
+        }
+
+        GreenAudioPlayer.playPlayer(this.player);
       } else {
-        this.playPause.attributes.d.value = 'M18 12L0 24V0';
-        this.player.pause();
+        GreenAudioPlayer.pausePlayer(this.player);
       }
     }
   }, {
@@ -273,6 +276,27 @@ function () {
       var min = Math.floor(time / 60);
       var sec = Math.floor(time % 60);
       return "".concat(min, ":").concat(sec < 10 ? "0".concat(sec) : sec);
+    }
+  }, {
+    key: "pausePlayer",
+    value: function pausePlayer(player) {
+      var playPauseButton = player.closest('.green-audio-player').querySelector('.play-pause-btn__icon');
+      playPauseButton.attributes.d.value = 'M18 12L0 24V0';
+      player.pause();
+    }
+  }, {
+    key: "playPlayer",
+    value: function playPlayer(player) {
+      var playPauseButton = player.closest('.green-audio-player').querySelector('.play-pause-btn__icon');
+      playPauseButton.attributes.d.value = 'M0 0h6v24H0zM12 0h6v24h-6z';
+      player.play();
+    }
+  }, {
+    key: "stopOtherPlayers",
+    value: function stopOtherPlayers() {
+      document.querySelectorAll('.green-audio-player audio').forEach(function (player) {
+        GreenAudioPlayer.pausePlayer(player);
+      });
     }
   }]);
 
