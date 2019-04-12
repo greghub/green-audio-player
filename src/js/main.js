@@ -1,6 +1,7 @@
 class GreenAudioPlayer {
     constructor(player, options) {
         this.audioPlayer = document.querySelector(player);
+        options = options || {};
 
         const audioElement = this.audioPlayer.innerHTML;
         this.audioPlayer.classList.add('green-audio-player');
@@ -20,7 +21,7 @@ class GreenAudioPlayer {
         this.speaker = this.audioPlayer.querySelector('.volume__speaker');
         this.draggableClasses = ['pin'];
         this.currentlyDragged = null;
-        this.stopOthersOnPlay = options.stopOthersOnPlay;
+        this.stopOthersOnPlay = options.stopOthersOnPlay || false;
 
         this.initEvents();
         this.directionAware();
@@ -40,7 +41,7 @@ class GreenAudioPlayer {
             <div class="controls">
                 <span class="controls__current-time">0:00</span>
                 <div class="controls__slider slider" data-direction="horizontal">
-                    <div class="controls__progress progress">
+                    <div class="controls__progress gap-progress">
                         <div class="pin progress__pin" data-method="rewind"></div>
                     </div>
                 </div>
@@ -55,7 +56,7 @@ class GreenAudioPlayer {
                 </div>
                 <div class="volume__controls hidden">
                     <div class="volume__slider slider" data-direction="vertical">
-                        <div class="volume__progress progress">
+                        <div class="volume__progress gap-progress">
                             <div class="pin volume__pin" data-method="changeVolume"></div>
                         </div>
                     </div>

@@ -32,6 +32,7 @@ function () {
     _classCallCheck(this, GreenAudioPlayer);
 
     this.audioPlayer = document.querySelector(player);
+    options = options || {};
     var audioElement = this.audioPlayer.innerHTML;
     this.audioPlayer.classList.add('green-audio-player');
     this.audioPlayer.innerHTML = GreenAudioPlayer.getTemplate() + audioElement;
@@ -49,7 +50,7 @@ function () {
     this.speaker = this.audioPlayer.querySelector('.volume__speaker');
     this.draggableClasses = ['pin'];
     this.currentlyDragged = null;
-    this.stopOthersOnPlay = options.stopOthersOnPlay;
+    this.stopOthersOnPlay = options.stopOthersOnPlay || false;
     this.initEvents();
     this.directionAware();
   }
@@ -268,7 +269,7 @@ function () {
   }], [{
     key: "getTemplate",
     value: function getTemplate() {
-      return "\n            <div class=\"loading\">\n                <div class=\"loading__spinner\"></div>\n            </div>\n            <div class=\"play-pause-btn\">\n                <svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"24\" viewBox=\"0 0 18 24\">\n                    <path fill=\"#566574\" fill-rule=\"evenodd\" d=\"M18 12L0 24V0\" class=\"play-pause-btn__icon\"/>\n                </svg>\n            </div>\n    \n            <div class=\"controls\">\n                <span class=\"controls__current-time\">0:00</span>\n                <div class=\"controls__slider slider\" data-direction=\"horizontal\">\n                    <div class=\"controls__progress progress\">\n                        <div class=\"pin progress__pin\" data-method=\"rewind\"></div>\n                    </div>\n                </div>\n                <span class=\"controls__total-time\">0:00</span>\n            </div>\n    \n            <div class=\"volume\">\n                <div class=\"volume__button\">\n                    <svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\">\n                        <path class=\"volume__speaker\" fill=\"#566574\" fill-rule=\"evenodd\" d=\"M14.667 0v2.747c3.853 1.146 6.666 4.72 6.666 8.946 0 4.227-2.813 7.787-6.666 8.934v2.76C20 22.173 24 17.4 24 11.693 24 5.987 20 1.213 14.667 0zM18 11.693c0-2.36-1.333-4.386-3.333-5.373v10.707c2-.947 3.333-2.987 3.333-5.334zm-18-4v8h5.333L12 22.36V1.027L5.333 7.693H0z\"/>\n                    </svg>\n                </div>\n                <div class=\"volume__controls hidden\">\n                    <div class=\"volume__slider slider\" data-direction=\"vertical\">\n                        <div class=\"volume__progress progress\">\n                            <div class=\"pin volume__pin\" data-method=\"changeVolume\"></div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n            \n        ";
+      return "\n            <div class=\"loading\">\n                <div class=\"loading__spinner\"></div>\n            </div>\n            <div class=\"play-pause-btn\">\n                <svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"24\" viewBox=\"0 0 18 24\">\n                    <path fill=\"#566574\" fill-rule=\"evenodd\" d=\"M18 12L0 24V0\" class=\"play-pause-btn__icon\"/>\n                </svg>\n            </div>\n    \n            <div class=\"controls\">\n                <span class=\"controls__current-time\">0:00</span>\n                <div class=\"controls__slider slider\" data-direction=\"horizontal\">\n                    <div class=\"controls__progress gap-progress\">\n                        <div class=\"pin progress__pin\" data-method=\"rewind\"></div>\n                    </div>\n                </div>\n                <span class=\"controls__total-time\">0:00</span>\n            </div>\n    \n            <div class=\"volume\">\n                <div class=\"volume__button\">\n                    <svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\">\n                        <path class=\"volume__speaker\" fill=\"#566574\" fill-rule=\"evenodd\" d=\"M14.667 0v2.747c3.853 1.146 6.666 4.72 6.666 8.946 0 4.227-2.813 7.787-6.666 8.934v2.76C20 22.173 24 17.4 24 11.693 24 5.987 20 1.213 14.667 0zM18 11.693c0-2.36-1.333-4.386-3.333-5.373v10.707c2-.947 3.333-2.987 3.333-5.334zm-18-4v8h5.333L12 22.36V1.027L5.333 7.693H0z\"/>\n                    </svg>\n                </div>\n                <div class=\"volume__controls hidden\">\n                    <div class=\"volume__slider slider\" data-direction=\"vertical\">\n                        <div class=\"volume__progress gap-progress\">\n                            <div class=\"pin volume__pin\" data-method=\"changeVolume\"></div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n            \n        ";
     }
   }, {
     key: "formatTime",
