@@ -181,7 +181,7 @@ class GreenAudioPlayer {
 
     getRangeBox(event) {
         let rangeBox = event.target;
-        let el = this.currentlyDragged;
+        const el = this.currentlyDragged;
         if (event.type === 'click' && this.isDraggable(event.target)) {
             rangeBox = event.target.parentElement.parentElement;
         }
