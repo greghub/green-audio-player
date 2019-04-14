@@ -1,13 +1,12 @@
 class GreenAudioPlayer {
     constructor(player, options) {
         this.audioPlayer = document.querySelector(player);
-        options = options || {};
+        const opts = options || {};
 
         const audioElement = this.audioPlayer.innerHTML;
         this.audioPlayer.classList.add('green-audio-player');
         this.audioPlayer.innerHTML = GreenAudioPlayer.getTemplate() + audioElement;
 
-        this.playPause = this.audioPlayer.querySelector('.play-pause-btn__icon');
         this.playPauseBtn = this.audioPlayer.querySelector('.play-pause-btn');
         this.loading = this.audioPlayer.querySelector('.loading');
         this.sliders = this.audioPlayer.querySelectorAll('.slider');
@@ -21,7 +20,7 @@ class GreenAudioPlayer {
         this.speaker = this.audioPlayer.querySelector('.volume__speaker');
         this.draggableClasses = ['pin'];
         this.currentlyDragged = null;
-        this.stopOthersOnPlay = options.stopOthersOnPlay || false;
+        this.stopOthersOnPlay = opts.stopOthersOnPlay || false;
 
         this.initEvents();
         this.directionAware();
@@ -111,7 +110,7 @@ class GreenAudioPlayer {
         this.player.addEventListener('seeking', this.showLoadingIndicator.bind(self));
         this.player.addEventListener('canplay', this.hideLoadingIndicator.bind(self));
         this.player.addEventListener('ended', () => {
-            self.playPause.attributes.d.value = 'M18 12L0 24V0';
+            GreenAudioPlayer.pausePlayer(self.player);
             self.player.currentTime = 0;
         });
 
