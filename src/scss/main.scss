@@ -118,6 +118,7 @@
 			flex-direction: column;
 			align-items: center;
 			display: flex;
+			z-index: 2;
 
 			&.hidden {
 				display: none;
