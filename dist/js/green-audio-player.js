@@ -95,7 +95,13 @@ function () {
         _this.totalTime.textContent = GreenAudioPlayer.formatTime(self.player.duration);
       });
       this.player.addEventListener('seeking', this.showLoadingIndicator.bind(self));
+      this.player.addEventListener('seeked', this.hideLoadingIndicator.bind(self));
       this.player.addEventListener('canplay', this.hideLoadingIndicator.bind(self));
+
+      if (window.navigator.userAgent.match(/iPad/i) || window.navigator.userAgent.match(/iPhone/i)) {
+        this.player.addEventListener('loadedmetadata', this.hideLoadingIndicator.bind(self));
+      }
+
       this.player.addEventListener('ended', function () {
         GreenAudioPlayer.pausePlayer(self.player);
         self.player.currentTime = 0;
