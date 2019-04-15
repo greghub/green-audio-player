@@ -52,6 +52,7 @@ function () {
     this.stopOthersOnPlay = opts.stopOthersOnPlay || false;
     this.initEvents();
     this.directionAware();
+    this.overcomeIosLimitations();
   }
 
   _createClass(GreenAudioPlayer, [{
@@ -97,11 +98,6 @@ function () {
       this.player.addEventListener('seeking', this.showLoadingIndicator.bind(self));
       this.player.addEventListener('seeked', this.hideLoadingIndicator.bind(self));
       this.player.addEventListener('canplay', this.hideLoadingIndicator.bind(self));
-
-      if (window.navigator.userAgent.match(/iPad/i) || window.navigator.userAgent.match(/iPhone/i)) {
-        this.player.addEventListener('loadedmetadata', this.hideLoadingIndicator.bind(self));
-      }
-
       this.player.addEventListener('ended', function () {
         GreenAudioPlayer.pausePlayer(self.player);
         self.player.currentTime = 0;
@@ -116,6 +112,19 @@ function () {
         var pin = slider.querySelector('.pin');
         slider.addEventListener('click', self[pin.dataset.method].bind(self));
       });
+    }
+  }, {
+    key: "overcomeIosLimitations",
+    value: function overcomeIosLimitations() {
+      var self = this;
+
+      if (window.navigator.userAgent.match(/iPad/i) || window.navigator.userAgent.match(/iPhone/i)) {
+        // iOS does not support "canplay" event
+        this.player.addEventListener('loadedmetadata', this.hideLoadingIndicator.bind(self)); // iOS does not let "volume" property be set programmatically
+
+        this.audioPlayer.querySelector('.volume').style.display = 'none';
+        this.audioPlayer.querySelector('.controls').style.marginRight = '0';
+      }
     }
   }, {
     key: "isDraggable",
