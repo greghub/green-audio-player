@@ -8,6 +8,10 @@
   },
   "author": "Greg Hovanesyan",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/greghub/green-audio-player.git"
+  },
   "devDependencies": {
     "@babel/core": "^7.2.2",
     "@babel/preset-env": "^7.3.1",
