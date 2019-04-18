@@ -292,7 +292,7 @@ class GreenAudioPlayer {
 
         if (window.innerHeight < 250) {
             this.volumeControls.classList.add('middle');
-        } else if (this.audioPlayer.getBoundingClientRect().top < 154) {
+        } else if (this.audioPlayer.getBoundingClientRect().top < 180) {
             this.volumeControls.classList.add('bottom');
         } else {
             this.volumeControls.classList.add('top');
