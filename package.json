@@ -1,6 +1,6 @@
 {
   "name": "green-audio-player",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Green Audio Player",
   "main": "main.js",
   "scripts": {
