@@ -155,19 +155,19 @@ class GreenAudioPlayer {
     inRange(event) {
         const touch = ('touches' in event); // instanceof TouchEvent may also be used
         const rangeBox = this.getRangeBox(event);
-        const rect = rangeBox.getBoundingClientRect();
+        const sliderPositionAndDimensions = rangeBox.getBoundingClientRect();
         const { dataset: { direction } } = rangeBox;
         let min = null;
         let max = null;
 
         if (direction === 'horizontal') {
-            min = rangeBox.offsetLeft;
-            max = min + rangeBox.offsetWidth;
+            min = sliderPositionAndDimensions.x;
+            max = min + sliderPositionAndDimensions.width;
             const clientX = touch ? event.touches[0].clientX : event.clientX;
             if (clientX < min || clientX > max) return false;
         } else {
-            min = rect.top;
-            max = min + rangeBox.offsetHeight;
+            min = sliderPositionAndDimensions.top;
+            max = min + sliderPositionAndDimensions.height;
             const clientY = touch ? event.touches[0].clientY : event.clientY;
             if (clientY < min || clientY > max) return false;
         }
@@ -213,18 +213,18 @@ class GreenAudioPlayer {
         const touch = ('touches' in event); // instanceof TouchEvent may also be used
 
         const slider = this.getRangeBox(event);
-        const rect = slider.getBoundingClientRect();
+        const sliderPositionAndDimensions = slider.getBoundingClientRect();
         let K = 0;
         if (slider.dataset.direction === 'horizontal') {
             // if event is touch
             const clientX = touch ? event.touches[0].clientX : event.clientX;
-            const offsetX = clientX - slider.offsetLeft;
-            const width = slider.clientWidth;
+            const offsetX = clientX - sliderPositionAndDimensions.x;
+            const width = sliderPositionAndDimensions.width;
             K = offsetX / width;
         } else if (slider.dataset.direction === 'vertical') {
-            const height = slider.clientHeight;
+            const height = sliderPositionAndDimensions.height;
             const clientY = touch ? event.touches[0].clientY : event.clientY;
-            const offsetY = clientY - rect.top;
+            const offsetY = clientY - sliderPositionAndDimensions.top;
             K = 1 - offsetY / height;
         }
         return K;

@@ -144,19 +144,19 @@ function () {
       var touch = 'touches' in event; // instanceof TouchEvent may also be used
 
       var rangeBox = this.getRangeBox(event);
-      var rect = rangeBox.getBoundingClientRect();
+      var sliderPositionAndDimensions = rangeBox.getBoundingClientRect();
       var direction = rangeBox.dataset.direction;
       var min = null;
       var max = null;
 
       if (direction === 'horizontal') {
-        min = rangeBox.offsetLeft;
-        max = min + rangeBox.offsetWidth;
+        min = sliderPositionAndDimensions.x;
+        max = min + sliderPositionAndDimensions.width;
         var clientX = touch ? event.touches[0].clientX : event.clientX;
         if (clientX < min || clientX > max) return false;
       } else {
-        min = rect.top;
-        max = min + rangeBox.offsetHeight;
+        min = sliderPositionAndDimensions.top;
+        max = min + sliderPositionAndDimensions.height;
         var clientY = touch ? event.touches[0].clientY : event.clientY;
         if (clientY < min || clientY > max) return false;
       }
@@ -210,19 +210,19 @@ function () {
       var touch = 'touches' in event; // instanceof TouchEvent may also be used
 
       var slider = this.getRangeBox(event);
-      var rect = slider.getBoundingClientRect();
+      var sliderPositionAndDimensions = slider.getBoundingClientRect();
       var K = 0;
 
       if (slider.dataset.direction === 'horizontal') {
         // if event is touch
         var clientX = touch ? event.touches[0].clientX : event.clientX;
-        var offsetX = clientX - slider.offsetLeft;
-        var width = slider.clientWidth;
+        var offsetX = clientX - sliderPositionAndDimensions.x;
+        var width = sliderPositionAndDimensions.width;
         K = offsetX / width;
       } else if (slider.dataset.direction === 'vertical') {
-        var height = slider.clientHeight;
+        var height = sliderPositionAndDimensions.height;
         var clientY = touch ? event.touches[0].clientY : event.clientY;
-        var offsetY = clientY - rect.top;
+        var offsetY = clientY - sliderPositionAndDimensions.top;
         K = 1 - offsetY / height;
       }
 
