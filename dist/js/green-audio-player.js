@@ -108,10 +108,11 @@ function () {
       });
       window.addEventListener('resize', self.directionAware.bind(self));
       window.addEventListener('scroll', self.directionAware.bind(self));
-      this.sliders.forEach(function (slider) {
-        var pin = slider.querySelector('.pin');
-        slider.addEventListener('click', self[pin.dataset.method].bind(self));
-      });
+
+      for (var i = 0; i < this.sliders.length; i++) {
+        var pin = this.sliders[i].querySelector('.pin');
+        this.sliders[i].addEventListener('click', self[pin.dataset.method].bind(self));
+      }
     }
   }, {
     key: "overcomeIosLimitations",
@@ -130,12 +131,14 @@ function () {
     key: "isDraggable",
     value: function isDraggable(el) {
       var canDrag = false;
-      var classes = Array.from(el.classList);
-      this.draggableClasses.forEach(function (draggable) {
-        if (classes.indexOf(draggable) !== -1) {
+      var classes = el.classList.toString().split(' ');
+
+      for (var i = 0; i < this.draggableClasses.length; i++) {
+        if (classes.indexOf(this.draggableClasses[i]) !== -1) {
           canDrag = true;
         }
-      });
+      }
+
       return canDrag;
     }
   }, {
@@ -309,9 +312,11 @@ function () {
   }, {
     key: "stopOtherPlayers",
     value: function stopOtherPlayers() {
-      document.querySelectorAll('.green-audio-player audio').forEach(function (player) {
-        GreenAudioPlayer.pausePlayer(player);
-      });
+      var players = document.querySelectorAll('.green-audio-player audio');
+
+      for (var i = 0; i < players.length; i++) {
+        GreenAudioPlayer.pausePlayer(players[i]);
+      }
     }
   }]);
 

@@ -124,10 +124,10 @@ class GreenAudioPlayer {
         window.addEventListener('resize', self.directionAware.bind(self));
         window.addEventListener('scroll', self.directionAware.bind(self));
 
-        this.sliders.forEach((slider) => {
-            const pin = slider.querySelector('.pin');
-            slider.addEventListener('click', self[pin.dataset.method].bind(self));
-        });
+        for (let i = 0; i < this.sliders.length; i++) {
+            const pin = this.sliders[i].querySelector('.pin');
+            this.sliders[i].addEventListener('click', self[pin.dataset.method].bind(self));
+        }
     }
 
     overcomeIosLimitations() {
@@ -143,12 +143,14 @@ class GreenAudioPlayer {
 
     isDraggable(el) {
         let canDrag = false;
-        const classes = Array.from(el.classList);
-        this.draggableClasses.forEach((draggable) => {
-            if (classes.indexOf(draggable) !== -1) {
+        const classes = el.classList.toString().split(' ');
+
+        for (let i = 0; i < this.draggableClasses.length; i++) {
+            if (classes.indexOf(this.draggableClasses[i]) !== -1) {
                 canDrag = true;
             }
-        });
+        }
+
         return canDrag;
     }
 
@@ -219,10 +221,10 @@ class GreenAudioPlayer {
             // if event is touch
             const clientX = touch ? event.touches[0].clientX : event.clientX;
             const offsetX = clientX - sliderPositionAndDimensions.x;
-            const width = sliderPositionAndDimensions.width;
+            const { width } = sliderPositionAndDimensions;
             K = offsetX / width;
         } else if (slider.dataset.direction === 'vertical') {
-            const height = sliderPositionAndDimensions.height;
+            const { height } = sliderPositionAndDimensions;
             const clientY = touch ? event.touches[0].clientY : event.clientY;
             const offsetY = clientY - sliderPositionAndDimensions.top;
             K = 1 - offsetY / height;
@@ -272,9 +274,11 @@ class GreenAudioPlayer {
     }
 
     static stopOtherPlayers() {
-        document.querySelectorAll('.green-audio-player audio').forEach((player) => {
-            GreenAudioPlayer.pausePlayer(player);
-        });
+        const players = document.querySelectorAll('.green-audio-player audio');
+
+        for (let i = 0; i < players.length; i++) {
+            GreenAudioPlayer.pausePlayer(players[i]);
+        }
     }
 
     showLoadingIndicator() {
