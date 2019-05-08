@@ -131,10 +131,10 @@ function () {
     key: "isDraggable",
     value: function isDraggable(el) {
       var canDrag = false;
-      var classes = el.classList.toString().split(' ');
+      if (typeof el.classList === 'undefined') return false; // fix for IE 11 not supporting classList on SVG elements
 
       for (var i = 0; i < this.draggableClasses.length; i++) {
-        if (classes.indexOf(this.draggableClasses[i]) !== -1) {
+        if (el.classList.contains(this.draggableClasses[i])) {
           canDrag = true;
         }
       }
@@ -219,7 +219,7 @@ function () {
       if (slider.dataset.direction === 'horizontal') {
         // if event is touch
         var clientX = touch ? event.touches[0].clientX : event.clientX;
-        var offsetX = clientX - sliderPositionAndDimensions.x;
+        var offsetX = clientX - sliderPositionAndDimensions.left;
         var width = sliderPositionAndDimensions.width;
         K = offsetX / width;
       } else if (slider.dataset.direction === 'vertical') {
@@ -298,14 +298,14 @@ function () {
   }, {
     key: "pausePlayer",
     value: function pausePlayer(player) {
-      var playPauseButton = player.closest('.green-audio-player').querySelector('.play-pause-btn__icon');
+      var playPauseButton = player.parentElement.querySelector('.play-pause-btn__icon');
       playPauseButton.attributes.d.value = 'M18 12L0 24V0';
       player.pause();
     }
   }, {
     key: "playPlayer",
     value: function playPlayer(player) {
-      var playPauseButton = player.closest('.green-audio-player').querySelector('.play-pause-btn__icon');
+      var playPauseButton = player.parentElement.querySelector('.play-pause-btn__icon');
       playPauseButton.attributes.d.value = 'M0 0h6v24H0zM12 0h6v24h-6z';
       player.play();
     }

@@ -143,10 +143,11 @@ class GreenAudioPlayer {
 
     isDraggable(el) {
         let canDrag = false;
-        const classes = el.classList.toString().split(' ');
+
+        if (typeof el.classList === 'undefined') return false; // fix for IE 11 not supporting classList on SVG elements
 
         for (let i = 0; i < this.draggableClasses.length; i++) {
-            if (classes.indexOf(this.draggableClasses[i]) !== -1) {
+            if (el.classList.contains(this.draggableClasses[i])) {
                 canDrag = true;
             }
         }
@@ -220,7 +221,7 @@ class GreenAudioPlayer {
         if (slider.dataset.direction === 'horizontal') {
             // if event is touch
             const clientX = touch ? event.touches[0].clientX : event.clientX;
-            const offsetX = clientX - sliderPositionAndDimensions.x;
+            const offsetX = clientX - sliderPositionAndDimensions.left;
             const { width } = sliderPositionAndDimensions;
             K = offsetX / width;
         } else if (slider.dataset.direction === 'vertical') {
@@ -262,13 +263,13 @@ class GreenAudioPlayer {
     }
 
     static pausePlayer(player) {
-        const playPauseButton = player.closest('.green-audio-player').querySelector('.play-pause-btn__icon');
+        const playPauseButton = player.parentElement.querySelector('.play-pause-btn__icon');
         playPauseButton.attributes.d.value = 'M18 12L0 24V0';
         player.pause();
     }
 
     static playPlayer(player) {
-        const playPauseButton = player.closest('.green-audio-player').querySelector('.play-pause-btn__icon');
+        const playPauseButton = player.parentElement.querySelector('.play-pause-btn__icon');
         playPauseButton.attributes.d.value = 'M0 0h6v24H0zM12 0h6v24h-6z';
         player.play();
     }
