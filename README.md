@@ -10,7 +10,7 @@ Based on a [pen](https://codepen.io/gregh/pen/NdVvbm) I've created 2 years ago.
 Due to requests from many people I decided to create a repository, 
 containing an improved version of the Green Audio Player including the support for multiple audio players on a single page.
 
-## [Online demo](https://codepen.io/gregh/full/NdVvbm)
+## [Online demo](https://greghub.github.io/green-audio-player/)
 
 <img src="https://i.imgur.com/CME3A0L.png" alt="Green Audio Player" width="680">
 
