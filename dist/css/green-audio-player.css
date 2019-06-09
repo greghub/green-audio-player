@@ -48,6 +48,15 @@
         position: absolute;
         pointer-events: all;
         box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.32); }
+        .green-audio-player .slider .gap-progress .pin::after {
+          content: "";
+          display: block;
+          background: rgba(0, 0, 0, 0);
+          width: 200%;
+          height: 200%;
+          margin-left: -50%;
+          margin-top: -50%;
+          border-radius: 50%; }
   .green-audio-player .controls {
     font-family: "Roboto", sans-serif;
     font-size: 16px;

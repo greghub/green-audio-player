@@ -56,6 +56,17 @@
 				position: absolute;
 				pointer-events: all;
 				box-shadow: 0 1px 1px 0 $shadow-medium;
+
+				&::after {
+					content: "";
+					display: block;
+					background: $transparent;
+					width: 200%;
+					height: 200%;
+					margin-left: -50%;
+					margin-top: -50%;
+					border-radius: 50%;
+				}
 			}
 		}
 	}
