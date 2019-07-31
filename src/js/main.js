@@ -1,6 +1,6 @@
 class GreenAudioPlayer {
     constructor(player, options) {
-        this.audioPlayer = document.querySelector(player);
+        this.audioPlayer = typeof player === 'string' ? document.querySelector(player) : player;
         const opts = options || {};
 
         const audioElement = this.audioPlayer.innerHTML;
@@ -25,6 +25,14 @@ class GreenAudioPlayer {
         this.initEvents();
         this.directionAware();
         this.overcomeIosLimitations();
+    }
+
+    static init(options) {
+        const players = document.querySelectorAll(options.selector);
+
+        players.forEach(player => {
+            new GreenAudioPlayer(player, options);
+        });
     }
 
     static getTemplate() {

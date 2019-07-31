@@ -65,6 +65,15 @@ new GreenAudioPlayer('.gap-example');
 ```
 
 You can add multiple players on a single page.
+
+There's a shorter method for initializing several Green Audio Players:
+```js
+GreenAudioPlayer.init({
+    selector: '.player', // inits Green Audio Player on each audio container that has class "player"
+    stopOthersOnPlay: true
+});
+```
+
 Refer to `/examples` folder for demos of single and multiple players.
 
 ## Options

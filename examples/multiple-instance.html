@@ -27,12 +27,12 @@
     </style>
 </head>
 <body>
-    <div class="ready-player-1">
+    <div class="ready-player-1 player">
         <audio crossorigin>
             <source src="audio/example-1.mp3" type="audio/mpeg">
         </audio>
     </div>
-    <div class="ready-player-2">
+    <div class="ready-player-2 player">
         <audio crossorigin>
             <source src="audio/example-2.mp3" type="audio/mpeg">
         </audio>
@@ -41,8 +41,10 @@
     <script src="../dist/js/green-audio-player.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            new GreenAudioPlayer('.ready-player-1', { stopOthersOnPlay: true });
-            new GreenAudioPlayer('.ready-player-2', { stopOthersOnPlay: true });
+            GreenAudioPlayer.init({
+                selector: '.player',
+                stopOthersOnPlay: true
+            });
         });
     </script>
 </body>
