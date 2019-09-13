@@ -122,3 +122,7 @@
           .green-audio-player .volume .volume__controls .volume__slider .volume__progress .volume__pin {
             left: -5px;
             top: -8px; }
+  .green-audio-player .download {
+    display: none;
+    margin-left: 16px;
+    cursor: pointer; }

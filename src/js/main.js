@@ -18,9 +18,15 @@ class GreenAudioPlayer {
         this.currentTime = this.audioPlayer.querySelector('.controls__current-time');
         this.totalTime = this.audioPlayer.querySelector('.controls__total-time');
         this.speaker = this.audioPlayer.querySelector('.volume__speaker');
+        this.download = this.audioPlayer.querySelector('.download');
+        this.downloadLink = this.audioPlayer.querySelector('.download__link');
         this.draggableClasses = ['pin'];
         this.currentlyDragged = null;
         this.stopOthersOnPlay = opts.stopOthersOnPlay || false;
+
+        if (opts.showDownloadButton || false) {
+            this.showDownload();
+        }
 
         this.initEvents();
         this.directionAware();
@@ -30,7 +36,8 @@ class GreenAudioPlayer {
     static init(options) {
         const players = document.querySelectorAll(options.selector);
 
-        players.forEach(player => {
+        players.forEach((player) => {
+            /* eslint-disable no-new */
             new GreenAudioPlayer(player, options);
         });
     }
@@ -40,6 +47,7 @@ class GreenAudioPlayer {
             <div class="loading">
                 <div class="loading__spinner"></div>
             </div>
+            
             <div class="play-pause-btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="24" viewBox="0 0 18 24">
                     <path fill="#566574" fill-rule="evenodd" d="M18 12L0 24V0" class="play-pause-btn__icon"/>
@@ -71,6 +79,14 @@ class GreenAudioPlayer {
                 </div>
             </div>
             
+            <div class="download" >
+                <a class="download__link" href="" download="">
+                    <svg width="24" height="24" fill="#566574" enable-background="new 0 0 29.978 29.978" version="1.1" viewBox="0 0 29.978 29.978" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
+                        <path d="m25.462 19.105v6.848h-20.947v-6.848h-4.026v8.861c0 1.111 0.9 2.012 2.016 2.012h24.967c1.115 0 2.016-0.9 2.016-2.012v-8.861h-4.026z"/>
+                        <path d="m14.62 18.426l-5.764-6.965s-0.877-0.828 0.074-0.828 3.248 0 3.248 0 0-0.557 0-1.416v-8.723s-0.129-0.494 0.615-0.494h4.572c0.536 0 0.524 0.416 0.524 0.416v8.742 1.266s1.842 0 2.998 0c1.154 0 0.285 0.867 0.285 0.867s-4.904 6.51-5.588 7.193c-0.492 0.495-0.964-0.058-0.964-0.058z"/>
+                    </svg>
+                </a>
+            </div>
         `;
     }
 
@@ -136,6 +152,8 @@ class GreenAudioPlayer {
             const pin = this.sliders[i].querySelector('.pin');
             this.sliders[i].addEventListener('click', self[pin.dataset.method].bind(self));
         }
+
+        this.downloadLink.addEventListener('click', this.downloadAudio.bind(self));
     }
 
     overcomeIosLimitations() {
@@ -298,6 +316,18 @@ class GreenAudioPlayer {
     hideLoadingIndicator() {
         this.playPauseBtn.style.display = 'block';
         this.loading.style.display = 'none';
+    }
+
+    showDownload() {
+        this.download.style.display = 'block';
+    }
+
+    downloadAudio() {
+        const src = this.player.currentSrc;
+        const name = src.split('/').reverse()[0];
+
+        this.downloadLink.setAttribute('href', src);
+        this.downloadLink.setAttribute('download', name);
     }
 
     directionAware() {
