@@ -81,3 +81,4 @@ Refer to `/examples` folder for demos of single and multiple players.
 | Option | Description | Values | Default |
 |--------|-------------|--------|---------|
 | stopOthersOnPlay | Whether other audio players shall get paused when hitting play | `true`, `false` | `false`
+| showDownloadButton | Allow audio file download. Displays the download button.  | `true`, `false` | `false`
