@@ -9,14 +9,15 @@
   min-width: 300px;
   height: 56px;
   box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.07);
-  display: flex;
+  display: flex !important;
   justify-content: space-between;
   align-items: center;
   padding-left: 24px;
   padding-right: 24px;
   border-radius: 4px;
   user-select: none;
-  background-color: #fff; }
+  background-color: #fff;
+  box-sizing: border-box; }
   .green-audio-player svg,
   .green-audio-player img {
     display: block; }

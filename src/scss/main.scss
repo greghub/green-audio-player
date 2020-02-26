@@ -6,7 +6,7 @@
 	min-width: 300px;
 	height: 56px;
 	box-shadow: 0 4px 16px 0 $shadow-light;
-	display: flex;
+	display: flex !important;
 	justify-content: space-between;
 	align-items: center;
 	padding-left: 24px;
@@ -14,6 +14,7 @@
 	border-radius: 4px;
 	user-select: none;
 	background-color: $white;
+	box-sizing: border-box;
 
 	svg,
 	img {
