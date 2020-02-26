@@ -31,6 +31,11 @@ class GreenAudioPlayer {
         this.initEvents();
         this.directionAware();
         this.overcomeIosLimitations();
+
+        if ('autoplay' in this.player.attributes) {
+            const playPauseButton = this.player.parentElement.querySelector('.play-pause-btn__icon');
+            playPauseButton.attributes.d.value = 'M0 0h6v24H0zM12 0h6v24h-6z';
+        }
     }
 
     static init(options) {
