@@ -19,23 +19,21 @@
 }
 
 .green-audio-player {
-    width: 424px;
-    min-width: 324px;
-    height: 56px;
-    box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.07);
-    display: flex !important;
+    width: 322px;
+    min-width: 300px;
+    height: 40px;
+    display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-left: 36px;
-    padding-right: 36px;
+    padding-left: 16px;
+    padding-right: 16px;
     border-radius: 4px;
     margin-bottom: 3px;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-    background-color: #fff;
-    box-sizing: border-box
+    background-color: #fff
 }
 
 .green-audio-player img,
@@ -51,9 +49,9 @@
     position: absolute;
     left: -28px;
     bottom: 2px;
-    width: 16px;
-    height: 16px;
-    border: 2px solid #b0b0b0;
+    width: 12px;
+    height: 12px;
+    border: 2px solid #ffc8c8;
     border-right-color: transparent;
     border-radius: 50%;
     -webkit-animation: spin 0.4s linear infinite;
@@ -68,32 +66,31 @@
 
 .green-audio-player .slider {
     flex-grow: 1;
-    background-color: #d8d8d8;
+    background-color: #b9ebd3;
     cursor: pointer;
     position: relative
 }
 
 .green-audio-player .slider .gap-progress {
-    background-color: #44bfa3;
+    background-color: #008000;
     border-radius: inherit;
     position: absolute;
     pointer-events: none
 }
 
 .green-audio-player .slider .gap-progress .pin {
-    height: 16px;
-    width: 16px;
-    border-radius: 8px;
-    background-color: #44bfa3;
+    height: 10px;
+    width: 10px;
+    border-radius: 5px;
+    background-color: #008000;
     position: absolute;
-    pointer-events: all;
-    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.32)
+    pointer-events: auto
 }
 
 .green-audio-player .slider .gap-progress .pin::after {
     content: "";
     display: block;
-    background: rgba(0, 0, 0, 0);
+    background: transparent;
     width: 200%;
     height: 200%;
     margin-left: -50%;
@@ -102,10 +99,11 @@
 }
 
 .green-audio-player .controls {
-    font-family: "Roboto", sans-serif;
-    font-size: 16px;
-    line-height: 18px;
-    color: #55606e;
+    font-family: Arial, Helvetica, Verdana, sans-serif;
+    font-size: 13px;
+    font-weight: bold;
+    line-height: 15px;
+    color: #008000;
     display: flex;
     flex-grow: 1;
     justify-content: space-between;
@@ -127,8 +125,8 @@
 }
 
 .green-audio-player .controls .controls__slider .controls__progress .progress__pin {
-    right: -8px;
-    top: -6px
+    right: -5px;
+    top: -3px
 }
 
 .green-audio-player .controls span {
@@ -143,15 +141,11 @@
     cursor: pointer
 }
 
-.green-audio-player .volume .volume__button.open path {
-    fill: #44bfa3
-}
-
 .green-audio-player .volume .volume__controls {
-    width: 30px;
-    height: 135px;
-    background-color: rgba(0, 0, 0, 0.62);
-    border-radius: 7px;
+    width: 26px;
+    height: 72px;
+    background-color: transparent;
+    border-radius: 5px;
     position: absolute;
     left: -3px;
     bottom: 52px;
@@ -164,49 +158,34 @@
 .green-audio-player .volume .volume__controls.hidden {
     display: none
 }
-.green-audio-player .volume .volume__controls.top {
-    bottom: 52px;
-    left: -3px
-}
-.green-audio-player .volume .volume__controls.middle {
-    bottom: -54px;
-    left: 54px
-}
-.green-audio-player .volume .volume__controls.bottom {
-    bottom: -164px;
-    left: -3px
+
+.green-audio-player .volume .volume__controls {
+    bottom: -26px;
+    left: 24px
 }
 
 .green-audio-player .volume .volume__controls .volume__slider {
     margin-top: 12px;
     margin-bottom: 12px;
-    width: 6px;
-    border-radius: 3px
+    width: 4px;
+    border-radius: 2px
 }
 
 .green-audio-player .volume .volume__controls .volume__slider .volume__progress {
     bottom: 0;
     height: 100%;
-    width: 6px
+    width: 4px
 }
 
 .green-audio-player .volume .volume__controls .volume__slider .volume__progress .volume__pin {
-    left: -5px;
-    top: -8px
-}
-
-.green-audio-player .download {
-    display: none;
-    margin-left: 12px;
-    margin-right: -20px;
-    cursor: pointer
+    left: -3px;
+    top: -4px
 }
 
 .green-audio-player .holder .play-pause-btn:hover,
 .green-audio-player .volume .volume__button:hover,
 .green-audio-player .volume .volume__controls:hover,
-.green-audio-player .controls:hover,
-.green-audio-player .download:hover {
+.green-audio-player .controls:hover {
     outline: dotted 1px #999
 }
 
@@ -215,13 +194,11 @@
 .green-audio-player .volume .volume__button,
 .green-audio-player .volume .volume__controls,
 .green-audio-player .controls,
-.green-audio-player .download,
 .green-audio-player:focus,
 .green-audio-player .holder .play-pause-btn:focus,
 .green-audio-player .volume .volume__button:focus,
 .green-audio-player .volume .volume__controls:focus,
-.green-audio-player .controls:focus,
-.green-audio-player .download:focus {
+.green-audio-player .controls:focus {
     outline: none
 }
 

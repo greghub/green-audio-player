@@ -2,178 +2,185 @@
 @import "animations";
 
 .green-audio-player {
-	width: 400px;
-	min-width: 300px;
-	height: 56px;
-	box-shadow: 0 4px 16px 0 $shadow-light;
-	display: flex !important;
-	justify-content: space-between;
-	align-items: center;
-	padding-left: 24px;
-	padding-right: 24px;
-	border-radius: 4px;
-	user-select: none;
-	background-color: $white;
-	box-sizing: border-box;
+  width: 424px;
+  min-width: 324px;
+  height: 56px;
+  box-shadow: 0 4px 16px 0 $shadow-light;
+  display: flex !important;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 24px;
+  padding-right: 24px;
+  border-radius: 4px;
+  margin-bottom: 3px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  background-color: $white;
+  box-sizing: border-box;
+  img, svg {
+    display: block;
+  }
+  .holder {
+    position: relative;
+    .loading .loading__spinner {
+      position: absolute;
+      left: -28px;
+      bottom: 2px;
+      width: 16px;
+      height: 16px;
+      border: 2px solid $light-gray;
+      border-right-color: transparent;
+      border-radius: 50%;
+      -webkit-animation: spin 0.4s linear infinite;
+      animation: spin 0.4s linear infinite;
+      z-index: 2;
+    }
+    .play-pause-btn {
+      display: block;
+      cursor: pointer;
+    }
+  }
+  .slider {
+    flex-grow: 1;
+    background-color: $lighter-gray;
+    cursor: pointer;
+    position: relative;
+    .gap-progress {
+      background-color: $primary;
+      border-radius: inherit;
+      position: absolute;
+      pointer-events: none;
+      .pin {
+        height: 16px;
+        width: 16px;
+        border-radius: 8px;
+        background-color: $primary;
+        position: absolute;
+        pointer-events: all;
+        box-shadow: 0 1px 1px 0 $shadow-medium;
+        &::after {
+          content: "";
+          display: block;
+          background: $transparent;
+          width: 200%;
+          height: 200%;
+          margin-left: -50%;
+          margin-top: -50%;
+          border-radius: 50%;
+        }
+      }
+    }
+  }
+  .controls {
+    font-family: "Roboto", sans-serif;
+    font-size: 16px;
+    line-height: 18px;
+    color: $text;
+    display: flex;
+    flex-grow: 1;
+    justify-content: space-between;
+    align-items: center;
+    margin-left: 12px;
+    margin-right: 12px;
+    .controls__slider {
+      margin-left: 16px;
+      margin-right: 16px;
+      border-radius: 2px;
+      height: 4px;
+      .controls__progress {
+        width: 0;
+        height: 100%;
+        .progress__pin {
+          right: -8px;
+          top: -6px;
+        }
+      }
+    }
+    span {
+      cursor: default;
+    }
+  }
+  .volume {
+    position: relative;
+    .volume__button {
+      cursor: pointer;
+      &.open {
+        path {
+          fill: $primary;
+        }
+      }
+    }
+    .volume__controls {
+      width: 30px;
+      height: 135px;
+      background-color: $shadow-dark;
+      border-radius: 7px;
+      position: absolute;
+      left: -3px;
+      bottom: 52px;
+      flex-direction: column;
+      align-items: center;
+      display: flex;
+      z-index: 2;
+      &.hidden {
+        display: none;
+      }
+      &.top {
+        bottom: 52px;
+        left: -3px;
+      }
+      &.middle {
+        bottom: -54px;
+        left: 54px;
+      }
+      &.bottom {
+        bottom: -164px;
+        left: -3px;
+      }
+      .volume__slider {
+        margin-top: 12px;
+        margin-bottom: 12px;
+        width: 6px;
+        border-radius: 3px;
+        .volume__progress {
+          bottom: 0;
+          height: 100%;
+          width: 6px;
+          .volume__pin {
+            left: -5px;
+            top: -8px;
+          }
+        }
+      }
+    }
+  }
+  .download {
+    display: none;
+    margin-left: 12px;
+	margin-right: -20px;
+    cursor: pointer;
+  }
+  .holder .play-pause-btn:hover, .volume .volume__button:hover, .volume .volume__controls:hover, .controls:hover, .download:hover {
+    outline: dotted 1px #999;
+  }
+  outline: none;
+  .holder .play-pause-btn, .volume .volume__button, .volume .volume__controls, .controls, .download, &:focus, .holder .play-pause-btn:focus, .volume .volume__button:focus, .volume .volume__controls:focus, controls:focus, download:focus {
+    outline: none;
+  }
+}
 
-	svg,
-	img {
-		display: block;
-	}
-
-	.play-pause-btn {
-		display: none;
-		cursor: pointer;
-	}
-
-	.loading {
-		.loading__spinner {
-			width: 16px;
-			height: 16px;
-			border: 2px solid $light-gray;
-			border-right-color: transparent;
-			border-radius: 50%;
-			animation: spin 0.4s linear infinite;
-		}
-	}
-
-	.slider {
-		flex-grow: 1;
-		background-color: $lighter-gray;
-		cursor: pointer;
-		position: relative;
-
-		.gap-progress {
-			background-color: $primary;
-			border-radius: inherit;
-			position: absolute;
-			pointer-events: none;
-
-			.pin {
-				height: 16px;
-				width: 16px;
-				border-radius: 8px;
-				background-color: $primary;
-				position: absolute;
-				pointer-events: all;
-				box-shadow: 0 1px 1px 0 $shadow-medium;
-
-				&::after {
-					content: "";
-					display: block;
-					background: $transparent;
-					width: 200%;
-					height: 200%;
-					margin-left: -50%;
-					margin-top: -50%;
-					border-radius: 50%;
-				}
-			}
-		}
-	}
-
-	.controls {
-		font-family: "Roboto", sans-serif;
-		font-size: 16px;
-		line-height: 18px;
-		color: $text;
-		display: flex;
-		flex-grow: 1;
-		justify-content: space-between;
-		align-items: center;
-		margin-left: 24px;
-		margin-right: 24px;
-
-		.controls__slider {
-			margin-left: 16px;
-			margin-right: 16px;
-			border-radius: 2px;
-			height: 4px;
-
-			.controls__progress {
-				width: 0;
-				height: 100%;
-
-				.progress__pin {
-					right: -8px;
-					top: -6px;
-				}
-			}
-		}
-
-		span {
-			cursor: default;
-		}
-	}
-
-	.volume {
-		position: relative;
-
-		.volume__button {
-			cursor: pointer;
-
-			&.open {
-				path {
-					fill: $primary;
-				}
-			}
-		}
-
-		.volume__controls {
-			width: 30px;
-			height: 135px;
-			background-color: $shadow-dark;
-			border-radius: 7px;
-			position: absolute;
-			left: -3px;
-			bottom: 52px;
-			flex-direction: column;
-			align-items: center;
-			display: flex;
-			z-index: 2;
-
-			&.hidden {
-				display: none;
-			}
-
-			&.top {
-				bottom: 52px;
-				left: -3px;
-			}
-
-			&.middle {
-				bottom: -54px;
-				left: 54px;
-			}
-
-			&.bottom {
-				bottom: -164px;
-				left: -3px;
-			}
-
-			.volume__slider {
-				margin-top: 12px;
-				margin-bottom: 12px;
-				width: 6px;
-				border-radius: 3px;
-
-				.volume__progress {
-					bottom: 0;
-					height: 100%;
-					width: 6px;
-
-					.volume__pin {
-						left: -5px;
-						top: -8px;
-					}
-				}
-			}
-		}
-	}
-
-	.download {
-		display: none;
-		margin-left: 16px;
-		cursor: pointer;
-	}
+.message__offscreen {
+  border: 0;
+  clip: rect(1px, 1px, 1px, 1px);
+  -webkit-clip-path: inset(50%);
+  clip-path: inset(50%);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+  word-wrap: normal;
 }

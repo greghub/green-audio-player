@@ -74,7 +74,11 @@ GreenAudioPlayer.init({
 });
 ```
 
+Single-instance players by default have keystrokes associated with pause/play [Spacebar], fast-forward [Right Arrow], rewind [Left Arrow], volume controls [Enter], volume up [Up Arrow] and volume down [Down Arrow].
+
 Refer to `/examples` folder for demos of single and multiple players.
+
+A demo with alternate 'css' and 'svg' can be found under `/examples/single-instance-2.html`.
 
 ## Options
 

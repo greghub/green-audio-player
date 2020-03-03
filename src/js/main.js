@@ -1,3 +1,5 @@
+const is_device = /ipad|iphone|ipod|android/i.test(window.navigator.userAgent.toLowerCase()) && !window.MSStream;
+
 class GreenAudioPlayer {
     constructor(player, options) {
         this.audioPlayer = typeof player === 'string' ? document.querySelector(player) : player;
@@ -20,9 +22,14 @@ class GreenAudioPlayer {
         this.speaker = this.audioPlayer.querySelector('.volume__speaker');
         this.download = this.audioPlayer.querySelector('.download');
         this.downloadLink = this.audioPlayer.querySelector('.download__link');
+        this.span = this.audioPlayer.querySelectorAll('.message__offscreen');
         this.draggableClasses = ['pin'];
         this.currentlyDragged = null;
         this.stopOthersOnPlay = opts.stopOthersOnPlay || false;
+
+        if (this.stopOthersOnPlay) {
+            for (let i = 0; i < this.span.length; i++) {this.span[i].outerHTML = ""}
+        }
 
         if (opts.showDownloadButton || false) {
             this.showDownload();
@@ -49,39 +56,45 @@ class GreenAudioPlayer {
 
     static getTemplate() {
         return `
-            <div class="loading">
-                <div class="loading__spinner"></div>
+            <div class="holder">
+                <div class="loading">
+                    <div class="loading__spinner"></div>
+                </div>
+
+                <div class="play-pause-btn" aria-label="Play">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="24" viewBox="0 0 18 24">
+                        <path fill="#566574" fill-rule="evenodd" d="M18 12L0 24V0" class="play-pause-btn__icon"/>
+                    </svg>
+                    <span class="message__offscreen">Press Spacebar to toggle pause and play.</span>
+                </div>
             </div>
-            
-            <div class="play-pause-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="24" viewBox="0 0 18 24">
-                    <path fill="#566574" fill-rule="evenodd" d="M18 12L0 24V0" class="play-pause-btn__icon"/>
-                </svg>
-            </div>
-    
+
             <div class="controls">
-                <span class="controls__current-time">0:00</span>
+                <span class="controls__current-time" aria-live="off" role="timer">00:00</span>
                 <div class="controls__slider slider" data-direction="horizontal">
-                    <div class="controls__progress gap-progress">
+                    <div class="controls__progress gap-progress" aria-label="Time Slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" role="slider">
                         <div class="pin progress__pin" data-method="rewind"></div>
                     </div>
+                    <span class="message__offscreen">Use Left/Right Arrow keys to fast-forward or rewind in increments.</span>
                 </div>
-                <span class="controls__total-time">0:00</span>
+                <span class="controls__total-time">00:00</span>
             </div>
-    
+
             <div class="volume">
-                <div class="volume__button">
+                <div class="volume__button open" aria-label="Open">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                         <path class="volume__speaker" fill="#566574" fill-rule="evenodd" d="M14.667 0v2.747c3.853 1.146 6.666 4.72 6.666 8.946 0 4.227-2.813 7.787-6.666 8.934v2.76C20 22.173 24 17.4 24 11.693 24 5.987 20 1.213 14.667 0zM18 11.693c0-2.36-1.333-4.386-3.333-5.373v10.707c2-.947 3.333-2.987 3.333-5.334zm-18-4v8h5.333L12 22.36V1.027L5.333 7.693H0z"/>
                     </svg>
+                    <span class="message__offscreen">Press Enter to show volume slider.</span>
                 </div>
                 <div class="volume__controls hidden">
                     <div class="volume__slider slider" data-direction="vertical">
-                        <div class="volume__progress gap-progress">
+                        <div class="volume__progress gap-progress" aria-label="Volume Slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="81" role="slider">
                             <div class="pin volume__pin" data-method="changeVolume"></div>
                         </div>
                     </div>
                 </div>
+                <span class="message__offscreen">Use Up/Down Arrow keys to increase or decrease volume.</span>
             </div>
             
             <div class="download" >
@@ -96,16 +109,25 @@ class GreenAudioPlayer {
     }
 
     initEvents() {
+        const p = 0;
         const self = this;
 
         self.audioPlayer.addEventListener('mousedown', (event) => {
             if (self.isDraggable(event.target)) {
                 self.currentlyDragged = event.target;
                 const handleMethod = self.currentlyDragged.dataset.method;
+                if (handleMethod === 'rewind' && self.player.paused === false) {
+                    GreenAudioPlayer.pausePlayer(self.player, 'rewind');
+                    self.p = 1;
+                }
                 const listener = self[handleMethod].bind(self);
 
                 window.addEventListener('mousemove', listener, false);
                 window.addEventListener('mouseup', () => {
+                    if (self.p > 0) {
+                        GreenAudioPlayer.playPlayer(self.player);
+                        self.p = 0;
+                    }
                     self.currentlyDragged = false;
                     window.removeEventListener('mousemove', listener, false);
                 }, false);
@@ -118,10 +140,18 @@ class GreenAudioPlayer {
                 [self.currentlyDragged] = event.targetTouches;
 
                 const handleMethod = self.currentlyDragged.target.dataset.method;
+                if (handleMethod === 'rewind' && self.player.paused === false) {
+                    GreenAudioPlayer.pausePlayer(self.player, 'rewind');
+                    self.p = 1;
+                }
                 const listener = self[handleMethod].bind(self);
 
                 window.addEventListener('touchmove', listener, false);
                 window.addEventListener('touchend', () => {
+                    if (self.p > 0) {
+                        GreenAudioPlayer.playPlayer(self.player);
+                        self.p = 0;
+                    }
                     self.currentlyDragged = false;
                     window.removeEventListener('touchmove', listener, false);
                 }, false);
@@ -133,25 +163,23 @@ class GreenAudioPlayer {
         this.playPauseBtn.addEventListener('click', this.togglePlay.bind(self));
         this.player.addEventListener('timeupdate', this.updateProgress.bind(self));
         this.player.addEventListener('volumechange', this.updateVolume.bind(self));
+        self.player.volume = 0.81;
         this.player.addEventListener('loadedmetadata', () => {
             this.totalTime.textContent = GreenAudioPlayer.formatTime(self.player.duration);
         });
-
+        window.addEventListener('keydown', this.pressKb.bind(self), false);
         this.player.addEventListener('seeking', this.showLoadingIndicator.bind(self));
         this.player.addEventListener('seeked', this.hideLoadingIndicator.bind(self));
         this.player.addEventListener('canplay', this.hideLoadingIndicator.bind(self));
         this.player.addEventListener('ended', () => {
-            GreenAudioPlayer.pausePlayer(self.player);
+            GreenAudioPlayer.pausePlayer(self.player, 'ended');
             self.player.currentTime = 0;
-        });
-
-        this.volumeBtn.addEventListener('click', () => {
-            self.volumeBtn.classList.toggle('open');
-            self.volumeControls.classList.toggle('hidden');
+            self.playPauseBtn.setAttribute('aria-label', 'Play');
         });
 
         window.addEventListener('resize', self.directionAware.bind(self));
         window.addEventListener('scroll', self.directionAware.bind(self));
+        this.volumeBtn.addEventListener('click', this.showhideVolume.bind(self));
 
         for (let i = 0; i < this.sliders.length; i++) {
             const pin = this.sliders[i].querySelector('.pin');
@@ -163,10 +191,10 @@ class GreenAudioPlayer {
 
     overcomeIosLimitations() {
         const self = this;
-        if (window.navigator.userAgent.match(/iPad/i) || window.navigator.userAgent.match(/iPhone/i)) {
-            // iOS does not support "canplay" event
+        if (is_device) {
+            // iOS and Android devices do not support "canplay" event
             this.player.addEventListener('loadedmetadata', this.hideLoadingIndicator.bind(self));
-            // iOS does not let "volume" property be set programmatically
+            // iOS and Android devices do not let "volume" property be set programmatically
             this.audioPlayer.querySelector('.volume').style.display = 'none';
             this.audioPlayer.querySelector('.controls').style.marginRight = '0';
         }
@@ -211,12 +239,14 @@ class GreenAudioPlayer {
     updateProgress() {
         const current = this.player.currentTime;
         const percent = (current / this.player.duration) * 100;
+        this.progress.setAttribute('aria-valuenow', percent);
         this.progress.style.width = `${percent}%`;
 
         this.currentTime.textContent = GreenAudioPlayer.formatTime(current);
     }
 
     updateVolume() {
+        this.volumeProgress.setAttribute('aria-valuenow', this.player.volume * 100);
         this.volumeProgress.style.height = `${this.player.volume * 100}%`;
         if (this.player.volume >= 0.5) {
             this.speaker.attributes.d.value = 'M14.667 0v2.747c3.853 1.146 6.666 4.72 6.666 8.946 0 4.227-2.813 7.787-6.666 8.934v2.76C20 22.173 24 17.4 24 11.693 24 5.987 20 1.213 14.667 0zM18 11.693c0-2.36-1.333-4.386-3.333-5.373v10.707c2-.947 3.333-2.987 3.333-5.334zm-18-4v8h5.333L12 22.36V1.027L5.333 7.693H0z';
@@ -269,31 +299,88 @@ class GreenAudioPlayer {
             this.player.currentTime = this.player.duration * this.getCoefficient(event);
         }
     }
-
+    showVolume() {
+      if (this.volumeBtn.getAttribute('aria-label') === 'Open') {
+        this.volumeControls.classList.remove('hidden');
+        this.volumeBtn.setAttribute('aria-label', 'Close');
+      }
+    }
+    showhideVolume() {
+      this.volumeBtn.classList.toggle('open');
+      this.volumeControls.classList.toggle('hidden');
+	  
+      if (this.volumeBtn.getAttribute('aria-label') === 'Open') {
+        this.volumeBtn.setAttribute('aria-label', 'Close');
+      } else {
+        this.volumeBtn.setAttribute('aria-label', 'Open');
+      }
+    }
     changeVolume(event) {
         if (this.inRange(event)) {
-            this.player.volume = Math.round(this.getCoefficient(event) * 10) / 10;
+            this.player.volume = Math.round(this.getCoefficient(event) * 50) / 50;
         }
     }
 
     static formatTime(time) {
         const min = Math.floor(time / 60);
         const sec = Math.floor(time % 60);
-        return `${min}:${(sec < 10) ? `0${sec}` : sec}`;
+        return `${(min < 10) ? `0${min}` : min}:${(sec < 10) ? `0${sec}` : sec}`;
     }
 
     togglePlay() {
         if (this.player.paused) {
             if (this.stopOthersOnPlay) {
-                GreenAudioPlayer.stopOtherPlayers();
+               GreenAudioPlayer.stopOtherPlayers();
             }
             GreenAudioPlayer.playPlayer(this.player);
+            this.playPauseBtn.setAttribute('aria-label', 'Pause');
         } else {
-            GreenAudioPlayer.pausePlayer(this.player);
+            GreenAudioPlayer.pausePlayer(this.player, 'toggle');
+            this.playPauseBtn.setAttribute('aria-label', 'Play');
         }
     }
 
-    static pausePlayer(player) {
+    setCurrentTime(time) {
+        const pos = this.player.currentTime;
+        const end = Math.floor(this.player.duration);
+        if (pos + time < 0 && pos === 0) {
+            return;
+        } else if (pos + time < 0) {
+            this.player.currentTime = 0;
+        } else if (pos + time > end) {
+            this.player.currentTime = end;
+        } else {
+            this.player.currentTime += time;
+        }
+    }
+
+    setVolume(volume) {
+        if (is_device) return;
+        const vol = this.player.volume;
+        if (vol + volume >= 0 && vol + volume < 1) {
+            this.player.volume += volume;
+        } else if (vol + volume <= 0) {
+            this.player.volume = 0;
+        } else {
+            this.player.volume = 1;
+        }
+    }
+
+    pressKb(evt) {
+        evt = evt || window.event;
+        if (!this.stopOthersOnPlay) {
+            switch (evt.keyCode) {
+                case 13: this.showhideVolume(); break;
+                case 32: this.togglePlay(); break;
+                case 37: this.setCurrentTime(-5); break;
+                case 39: this.setCurrentTime(5); break;
+                case 38: this.showVolume(); this.setVolume(0.05); break;
+                case 40: this.showVolume(); this.setVolume(-0.05); break;
+            }
+        }
+    }
+
+    static pausePlayer(player, state) {
         const playPauseButton = player.parentElement.querySelector('.play-pause-btn__icon');
         playPauseButton.attributes.d.value = 'M18 12L0 24V0';
         player.pause();
@@ -314,12 +401,10 @@ class GreenAudioPlayer {
     }
 
     showLoadingIndicator() {
-        this.playPauseBtn.style.display = 'none';
         this.loading.style.display = 'block';
     }
 
     hideLoadingIndicator() {
-        this.playPauseBtn.style.display = 'block';
         this.loading.style.display = 'none';
     }
 
