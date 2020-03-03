@@ -288,21 +288,23 @@ function () {
   }, {
     key: "showVolume",
     value: function showVolume() {
-      if (this.volumeBtn.getAttribute('aria-label') === 'Open') {
+      if (this.volumeBtn.getAttribute('aria-label') === 'Close') {
         this.volumeControls.classList.remove('hidden');
-        this.volumeBtn.setAttribute('aria-label', 'Close');
+        this.volumeBtn.classList.add('open');
+        this.volumeBtn.setAttribute('aria-label', 'Open');
       }
     }
   }, {
     key: "showhideVolume",
     value: function showhideVolume() {
-      this.volumeBtn.classList.toggle('open');
       this.volumeControls.classList.toggle('hidden');
 
       if (this.volumeBtn.getAttribute('aria-label') === 'Open') {
         this.volumeBtn.setAttribute('aria-label', 'Close');
+        this.volumeBtn.classList.remove('open');
       } else {
         this.volumeBtn.setAttribute('aria-label', 'Open');
+        this.volumeBtn.classList.add('open');
       }
     }
   }, {

@@ -147,8 +147,8 @@
     background-color: transparent;
     border-radius: 5px;
     position: absolute;
-    left: -3px;
-    bottom: 52px;
+    bottom: -26px;
+    left: 24px;
     flex-direction: column;
     align-items: center;
     display: flex;
@@ -157,11 +157,6 @@
 
 .green-audio-player .volume .volume__controls.hidden {
     display: none
-}
-
-.green-audio-player .volume .volume__controls {
-    bottom: -26px;
-    left: 24px
 }
 
 .green-audio-player .volume .volume__controls .volume__slider {
