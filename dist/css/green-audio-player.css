@@ -21,16 +21,22 @@
   .green-audio-player svg,
   .green-audio-player img {
     display: block; }
-  .green-audio-player .play-pause-btn {
-    display: none;
-    cursor: pointer; }
-  .green-audio-player .loading .loading__spinner {
+  .green-audio-player .holder {
+    position: relative; }
+  .green-audio-player .holder .loading .loading__spinner {
+    position: absolute;
+    left: -3px;
+    bottom: 2px;
     width: 16px;
     height: 16px;
     border: 2px solid #b0b0b0;
     border-right-color: transparent;
     border-radius: 50%;
-    animation: spin 0.4s linear infinite; }
+    animation: spin 0.4s linear infinite;
+    z-index: 2; }
+  .green-audio-player .holder .play-pause-btn {
+    visibility: hidden;
+    cursor: pointer; }
   .green-audio-player .slider {
     flex-grow: 1;
     background-color: #d8d8d8;
@@ -127,3 +133,37 @@
     display: none;
     margin-left: 16px;
     cursor: pointer; }
+.green-audio-player .holder .play-pause-btn:hover,
+.green-audio-player .volume .volume__button:hover,
+.green-audio-player .volume .volume__controls:hover,
+.green-audio-player .controls:hover,
+.green-audio-player .download:hover {
+    outline: dotted 1px #999
+}
+.green-audio-player,
+.green-audio-player .holder .play-pause-btn,
+.green-audio-player .volume .volume__button,
+.green-audio-player .volume .volume__controls,
+.green-audio-player .controls,
+.green-audio-player .download,
+.green-audio-player:focus,
+.green-audio-player .holder .play-pause-btn:focus,
+.green-audio-player .volume .volume__button:focus,
+.green-audio-player .volume .volume__controls:focus,
+.green-audio-player .controls:focus,
+.green-audio-player .download:focus {
+    outline: none
+}
+.message__offscreen {
+    border: 0;
+    clip: rect( 1px, 1px, 1px, 1px );
+    -webkit-clip-path: inset( 50% );
+    clip-path: inset( 50% );
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+    word-wrap: normal
+}

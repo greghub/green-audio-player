@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en-US">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Green Audio Player II</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+<!--
+html,body{margin:0;padding:0;height:100%;text-align:center;overflow:hidden;}
+body{background-color:#FFF;}
+table{margin-left:auto;margin-right:auto;height:90%;}
+td{font:bold 13px Arial,Helvetica,Verdana,sans-serif;}
+.greentext{color:green;white-space:nowrap;}
+-->
+</style>
+<link rel="stylesheet" type="text/css" href="../dist/css/green-audio-player-2.css">
+</head>
+<body>
+
+<table><tr><td class="greentext">
+<em>ragtime recording</em><br>
+<div class="ready-player-2">
+<audio>
+<source src="audio/example-1.mp3" type="audio/mpeg">
+</audio>
+</div>Jubilee Blues&nbsp;&#8212;&nbsp;Belle Baker [ 3:00 ]</td></tr></table>
+<script src="../dist/js/green-audio-player-2.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+new GreenAudioPlayer('.ready-player-2');
+});
+</script>
+
+</body>
+</html>
