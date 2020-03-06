@@ -30,12 +30,39 @@ const styles = () => {
     );
 };
 
+const styles_two = () => {
+    const plugins = [autoprefixer(), cssnano()];
+
+    return (
+        gulp.src(['./src/scss/main-2.scss']) // add multiple sass files
+            .pipe(sass().on('error', sass.logError))
+            .pipe(rename({ basename: 'green-audio-player-2' }))
+            .pipe(gulp.dest('./dist/css'))
+            .pipe(postcss(plugins))
+            .pipe(rename({ suffix: '.min' }))
+            .pipe(gulp.dest('./dist/css'))
+            .pipe(server.stream())
+    );
+};
+
 const scripts = () => browserify({
     entries: './index.js',
     standalone: 'GreenAudioPlayer'
 }).transform(babelify, { presets: ['@babel/preset-env'] })
     .bundle()
     .pipe(source('green-audio-player.js')) // library-name.js
+    .pipe(gulp.dest('dist/js'))
+    .pipe(streamify(uglify()))
+    .pipe(rename({ suffix: '.min' }))
+    .pipe(gulp.dest('dist/js'))
+    .pipe(server.stream());
+
+const scripts_two = () => browserify({
+    entries: './index-2.js',
+    standalone: 'GreenAudioPlayer'
+}).transform(babelify, { presets: ['@babel/preset-env'] })
+    .bundle()
+    .pipe(source('green-audio-player-2.js')) // library-name.js
     .pipe(gulp.dest('dist/js'))
     .pipe(streamify(uglify()))
     .pipe(rename({ suffix: '.min' }))
@@ -57,10 +84,10 @@ const startServer = () => server.init({
 });
 
 const watchHTML = () => gulp.watch('./*.html').on('change', server.reload);
-const watchScripts = () => gulp.watch('./src/js/*.js', gulp.series('scriptsLint', 'scripts'));
-const watchStyles = () => gulp.watch('./src/scss/**/*.scss', gulp.series('stylesLint', 'styles'));
+const watchScripts = () => gulp.watch('./src/js/*.js', gulp.series('scriptsLint', 'scripts', 'scripts_two'));
+const watchStyles = () => gulp.watch('./src/scss/**/*.scss', gulp.series('stylesLint', 'styles', 'styles_two'));
 
-const compile = gulp.parallel(styles, scripts);
+const compile = gulp.parallel(styles, styles_two, scripts, scripts_two);
 const lint = gulp.parallel(scriptsLint, stylesLint);
 const serve = gulp.series(compile, startServer);
 const watch = gulp.series(lint, gulp.parallel(watchHTML, watchScripts, watchStyles));
@@ -68,7 +95,9 @@ const defaultTasks = gulp.parallel(serve, watch);
 
 export {
     styles,
+    styles_two,
     scripts,
+    scripts_two,
     scriptsLint,
     stylesLint,
     watchHTML,

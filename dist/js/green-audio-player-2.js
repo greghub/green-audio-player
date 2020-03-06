@@ -1,21 +1,41 @@
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.GreenAudioPlayer = f()}})(function(){var define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+"use strict";
+
+module.exports = require('./src/js/main-2').default;
+
+},{"./src/js/main-2":2}],2:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) { return; } var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var is_device = /ipad|iphone|ipod|android/i.test(window.navigator.userAgent.toLowerCase()) && !window.MSStream;
-
 var GreenAudioPlayer =
+/*#__PURE__*/
 function () {
-  function GreenAudioPlayer(player, options) {
+  function GreenAudioPlayer(player) {
     _classCallCheck(this, GreenAudioPlayer);
 
     this.audioPlayer = document.querySelector(player);
-    var opts = options || {};
     var audioElement = this.audioPlayer.innerHTML;
     this.audioPlayer.classList.add('green-audio-player');
     this.audioPlayer.innerHTML = GreenAudioPlayer.getTemplate() + audioElement;
+    this.isDevice = /ipad|iphone|ipod|android/i.test(window.navigator.userAgent.toLowerCase()) && !window.MSStream;
     this.playPauseBtn = this.audioPlayer.querySelector('.play-pause-btn');
     this.loading = this.audioPlayer.querySelector('.loading');
     this.sliders = this.audioPlayer.querySelectorAll('.slider');
@@ -34,6 +54,7 @@ function () {
     this.currentlyDragged = null;
     this.initEvents();
     this.overcomeIosLimitations();
+
     if ('autoplay' in this.player.attributes) {
       var playPauseButton = this.player.parentElement.querySelector('.play-pause-btn__icon');
       playPauseButton.attributes.d.value = 'M7.7 3q0-.4-.3-.7-.3-.3-.7-.3H4.5q-.4 0-.7.3-.3.3-.3.7v14q0 .4.3.7.3.3.7.3h2.2q.4 0 .7-.3.3-.3.3-.7V3zm9.8 0q0-.4-.3-.7-.3-.3-.7-.3h-2.2q-.4 0-.7.3-.3.3-.3.7v14q0 .4.3.7.3.3.7.3h2.2q.4 0 .7-.3.3-.3.3-.7V3z';
@@ -45,7 +66,7 @@ function () {
     value: function initEvents() {
       var _this = this;
 
-      var p = 0;
+      this.p = 0;
       var self = this;
       self.audioPlayer.addEventListener('mousedown', function (event) {
         if (self.isDraggable(event.target)) {
@@ -69,9 +90,8 @@ function () {
             window.removeEventListener('mousemove', listener, false);
           }, false);
         }
-      });
+      }); // for mobile touches
 
-      // for mobile touches
       self.audioPlayer.addEventListener('touchstart', function (event) {
         if (self.isDraggable(event.target)) {
           var _event$targetTouches = _slicedToArray(event.targetTouches, 1);
@@ -126,10 +146,10 @@ function () {
     value: function overcomeIosLimitations() {
       var self = this;
 
-      if (is_device) {
+      if (this.isDevice) {
         // iOS and Android devices do not support "canplay" event
-        this.player.addEventListener('loadedmetadata', this.hideLoadingIndicator.bind(self));
-        // iOS and Android devices do not let "volume" property be set programmatically
+        this.player.addEventListener('loadedmetadata', this.hideLoadingIndicator.bind(self)); // iOS and Android devices do not let "volume" property be set programmatically
+
         this.audioPlayer.querySelector('.volume').style.display = 'none';
         this.audioPlayer.querySelector('.controls').style.marginRight = '0';
       }
@@ -298,7 +318,7 @@ function () {
       var end = Math.floor(this.player.duration);
 
       if (pos + time < 0 && pos === 0) {
-        return;
+        this.player.currentTime = this.player.currentTime;
       } else if (pos + time < 0) {
         this.player.currentTime = 0;
       } else if (pos + time > end) {
@@ -310,7 +330,7 @@ function () {
   }, {
     key: "setVolume",
     value: function setVolume(volume) {
-      if (is_device) return;
+      if (this.isDevice) return;
       var vol = this.player.volume;
 
       if (vol + volume >= 0 && vol + volume < 1) {
@@ -323,8 +343,8 @@ function () {
     }
   }, {
     key: "pressKb",
-    value: function pressKb(evt) {
-      evt = evt || window.event;
+    value: function pressKb(event) {
+      var evt = event || window.event;
 
       switch (evt.keyCode) {
         case 13:
@@ -352,6 +372,9 @@ function () {
           this.showVolume();
           this.setVolume(-0.05);
           break;
+
+        default:
+          break;
       }
     }
   }, {
@@ -367,7 +390,7 @@ function () {
   }], [{
     key: "getTemplate",
     value: function getTemplate() {
-      return "\n<div class=\"holder\">\n<div class=\"loading\">\n<div class=\"loading__spinner\"></div>\n</div>\n<div class=\"play-pause-btn\" aria-label=\"Play\">\n<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 20 20\">\n<path fill=\"#008000\" fill-rule=\"nonzero\" d=\"M16.4 10.5q.4-.2.4-.5t-.4-.55L5.05 2.5q-.35-.2-.6-.05-.25.15-.25.55v14q0 .4.25.55.25.15.6-.1L16.4 10.5z\" class=\"play-pause-btn__icon\"/>\n</svg>\n<span class=\"message__offscreen\">Press Spacebar to toggle pause and play.</span>\n</div>\n</div>\n\n<div class=\"controls\">\n<span class=\"controls__current-time\" aria-live=\"off\" role=\"timer\">00:00</span>\n<div class=\"controls__slider slider\" data-direction=\"horizontal\">\n<div class=\"controls__progress gap-progress\" aria-label=\"Time Slider\" aria-valuemin=\"0\" aria-valuemax=\"100\" aria-valuenow=\"0\" role=\"slider\">\n<div class=\"pin progress__pin\" data-method=\"rewind\"></div>\n</div>\n<span class=\"message__offscreen\">Use Left/Right Arrow keys to fast-forward or rewind in increments.</span>\n</div>\n<span class=\"controls__total-time\">00:00</span>\n</div>\n\n<div class=\"volume\">\n<div class=\"volume__button\" aria-label=\"Close\">\n<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 20 20\">\n<path class=\"volume__speaker\" fill=\"#008000\" fill-rule=\"evenodd\" d=\"M11.85 2.7q-.25-.1-.55.15L7.75 5.5q-.75.6-1.8.6H2.8q-1 0-1 1v5.75q0 1 1 1h3.15q1 0 1 .05l4.35 3.2q.3.25.55.15.25-.15.25-.55V3.25q0-.4-.25-.55z\"/>\n<path class=\"volume__speaker-one\" stroke=\"#008000\" stroke-width=\"1.5\" stroke-linecap=\"round\" fill=\"none\" d=\"M13.35 6.1h.4l.55.15.65.4q1 1 1 3.35-.05 2.1-.85 3.05-.15.2-.7.6l-.65.2h-.4\"/>\n<path class=\"volume__speaker-two\" stroke=\"#008000\" stroke-width=\"1.5\" stroke-linecap=\"round\" fill=\"none\" d=\"M14.65 2.25h.4l.75.15q1.1.5 1.7 1.7 1.05 2.05 1 5.9 0 3.4-.9 5.45-.65 1.6-1.75 2.05-.35.2-.7.2h-.5\"/>\n<path class=\"volume__speaker-three\" stroke=\"none\" stroke-width=\"1.5\" stroke-linecap=\"round\" fill=\"none\" d=\"M13.35 7.25l5.4 5.4m-5.4 0l5.4-5.4\"/>\n</svg>\n<span class=\"message__offscreen\">Press Enter to show volume slider.</span>\n</div>\n<div class=\"volume__controls hidden\">\n<div class=\"volume__slider slider\" data-direction=\"vertical\">\n<div class=\"volume__progress gap-progress\" aria-label=\"Volume Slider\" aria-valuemin=\"0\" aria-valuemax=\"100\" aria-valuenow=\"81\" role=\"slider\">\n<div class=\"pin volume__pin\" data-method=\"changeVolume\"></div>\n</div>\n</div>\n</div>\n<span class=\"message__offscreen\">Use Up/Down Arrow keys to increase or decrease volume.</span>\n</div>";
+      return "\n            <div class=\"holder\">\n                <div class=\"loading\">\n                    <div class=\"loading__spinner\"></div>\n                </div>\n\n                <div class=\"play-pause-btn\" aria-label=\"Play\">\n                    <svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 20 20\">\n                        <path fill=\"#008000\" fill-rule=\"nonzero\" d=\"M16.4 10.5q.4-.2.4-.5t-.4-.55L5.05 2.5q-.35-.2-.6-.05-.25.15-.25.55v14q0 .4.25.55.25.15.6-.1L16.4 10.5z\" class=\"play-pause-btn__icon\"/>\n                    </svg>\n                    <span class=\"message__offscreen\">Press Spacebar to toggle pause and play.</span>\n                </div>\n            </div>\n\n            <div class=\"controls\">\n                <span class=\"controls__current-time\" aria-live=\"off\" role=\"timer\">00:00</span>\n                <div class=\"controls__slider slider\" data-direction=\"horizontal\">\n                    <div class=\"controls__progress gap-progress\" aria-label=\"Time Slider\" aria-valuemin=\"0\" aria-valuemax=\"100\" aria-valuenow=\"0\" role=\"slider\">\n                        <div class=\"pin progress__pin\" data-method=\"rewind\"></div>\n                    </div>\n                    <span class=\"message__offscreen\">Use Left/Right Arrow keys to fast-forward or rewind in increments.</span>\n                </div>\n                <span class=\"controls__total-time\">00:00</span>\n            </div>\n\n            <div class=\"volume\">\n                <div class=\"volume__button\" aria-label=\"Close\">\n                    <svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 20 20\">\n                        <path class=\"volume__speaker\" fill=\"#008000\" fill-rule=\"evenodd\" d=\"M11.85 2.7q-.25-.1-.55.15L7.75 5.5q-.75.6-1.8.6H2.8q-1 0-1 1v5.75q0 1 1 1h3.15q1 0 1 .05l4.35 3.2q.3.25.55.15.25-.15.25-.55V3.25q0-.4-.25-.55z\"/>\n                        <path class=\"volume__speaker-one\" stroke=\"#008000\" stroke-width=\"1.5\" stroke-linecap=\"round\" fill=\"none\" d=\"M13.35 6.1h.4l.55.15.65.4q1 1 1 3.35-.05 2.1-.85 3.05-.15.2-.7.6l-.65.2h-.4\"/>\n                        <path class=\"volume__speaker-two\" stroke=\"#008000\" stroke-width=\"1.5\" stroke-linecap=\"round\" fill=\"none\" d=\"M14.65 2.25h.4l.75.15q1.1.5 1.7 1.7 1.05 2.05 1 5.9 0 3.4-.9 5.45-.65 1.6-1.75 2.05-.35.2-.7.2h-.5\"/>\n                        <path class=\"volume__speaker-three\" stroke=\"none\" stroke-width=\"1.5\" stroke-linecap=\"round\" fill=\"none\" d=\"M13.35 7.25l5.4 5.4m-5.4 0l5.4-5.4\"/>\n                    </svg>\n                    <span class=\"message__offscreen\">Press Enter to show volume slider.</span>\n                </div>\n                <div class=\"volume__controls hidden\">\n                    <div class=\"volume__slider slider\" data-direction=\"vertical\">\n                        <div class=\"volume__progress gap-progress\" aria-label=\"Volume Slider\" aria-valuemin=\"0\" aria-valuemax=\"100\" aria-valuenow=\"81\" role=\"slider\">\n                            <div class=\"pin volume__pin\" data-method=\"changeVolume\"></div>\n                        </div>\n                    </div>\n                </div>\n                <span class=\"message__offscreen\">Use Up/Down Arrow keys to increase or decrease volume.</span>\n            </div>\n        ";
     }
   }, {
     key: "formatTime",
@@ -395,6 +418,8 @@ function () {
   return GreenAudioPlayer;
 }();
 
-document.addEventListener('DOMContentLoaded', function() {
-new GreenAudioPlayer('.green-audio-player');
+var _default = GreenAudioPlayer;
+exports.default = _default;
+
+},{}]},{},[1])(1)
 });

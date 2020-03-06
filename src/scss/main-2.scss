@@ -2,19 +2,18 @@
 @import "animations";
 
 .green-audio-player {
-	width: 400px;
+	width: 322px;
 	min-width: 300px;
-	height: 56px;
-	box-shadow: 0 4px 16px 0 $shadow-light;
-	display: flex !important;
+	height: 40px;
+	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	padding-left: 24px;
-	padding-right: 24px;
+	padding-left: 16px;
+	padding-right: 16px;
 	border-radius: 4px;
+	margin-bottom: 3px;
 	user-select: none;
 	background-color: $white;
-	box-sizing: border-box;
 	outline: none;
 
 	svg,
@@ -28,11 +27,11 @@
 		.loading {
 			.loading__spinner {
 				position: absolute;
-				left: -3px;
+				left: -28px;
 				bottom: 2px;
-				width: 16px;
-				height: 16px;
-				border: 2px solid $light-gray;
+				width: 12px;
+				height: 12px;
+				border: 2px solid $pink;
 				border-right-color: $transparent;
 				border-radius: 50%;
 				animation: spin 0.4s linear infinite;
@@ -40,7 +39,7 @@
 		}
 
 		.play-pause-btn {
-			visibility: hidden;
+			display: block;
 			cursor: pointer;
 			outline: none;
 
@@ -56,24 +55,23 @@
 
 	.slider {
 		flex-grow: 1;
-		background-color: $lighter-gray;
+		background-color: $ghost-green;
 		cursor: pointer;
 		position: relative;
 
 		.gap-progress {
-			background-color: $primary;
+			background-color: $green;
 			border-radius: inherit;
 			position: absolute;
 			pointer-events: none;
 
 			.pin {
-				height: 16px;
-				width: 16px;
-				border-radius: 8px;
-				background-color: $primary;
+				height: 10px;
+				width: 10px;
+				border-radius: 5px;
+				background-color: $green;
 				position: absolute;
-				pointer-events: all;
-				box-shadow: 0 1px 1px 0 $shadow-medium;
+				pointer-events: auto;
 
 				&::after {
 					content: "";
@@ -90,16 +88,17 @@
 	}
 
 	.controls {
-		font-family: "Roboto", sans-serif;
-		font-size: 16px;
-		line-height: 18px;
-		color: $text;
+		font-family: Arial, Helvetica, Verdana, sans-serif;
+		font-size: 13px;
+		font-weight: bold;
+		line-height: 15px;
+		color: $green;
 		display: flex;
 		flex-grow: 1;
 		justify-content: space-between;
 		align-items: center;
-		margin-left: 15px;
-		margin-right: 15px;
+		margin-left: 12px;
+		margin-right: 12px;
 		outline: none;
 
 		.controls__slider {
@@ -113,8 +112,8 @@
 				height: 100%;
 
 				.progress__pin {
-					right: -8px;
-					top: -6px;
+					right: -5px;
+					top: -3px;
 				}
 			}
 		}
@@ -146,22 +145,16 @@
 			&:focus {
 				outline: none;
 			}
-
-			&.open {
-				path {
-					fill: $primary;
-					}
-				}
-			}
+		}
 
 		.volume__controls {
-			width: 30px;
-			height: 135px;
-			background-color: $shadow-dark;
-			border-radius: 7px;
+			width: 26px;
+			height: 72px;
+			background-color: $transparent;
+			border-radius: 5px;
 			position: absolute;
-			left: -3px;
-			bottom: 52px;
+			bottom: -26px;
+			left: 24px;
 			flex-direction: column;
 			align-items: center;
 			display: flex;
@@ -171,17 +164,17 @@
 			.volume__slider {
 				margin-top: 12px;
 				margin-bottom: 12px;
-				width: 6px;
-				border-radius: 3px;
+				width: 4px;
+				border-radius: 2px;
 
 				.volume__progress {
 					bottom: 0;
 					height: 100%;
-					width: 6px;
+					width: 4px;
 
 					.volume__pin {
-						left: -5px;
-						top: -8px;
+						left: -3px;
+						top: -4px;
 					}
 				}
 			}
@@ -197,36 +190,6 @@
 			&.hidden {
 				display: none;
 			}
-
-			&.top {
-				bottom: 52px;
-				left: -3px;
-			}
-
-			&.middle {
-				bottom: -54px;
-				left: 54px;
-			}
-
-			&.bottom {
-				bottom: -164px;
-				left: -3px;
-			}
-		}
-	}
-
-	.download {
-		display: none;
-		margin-left: 16px;
-		cursor: pointer;
-		outline: none;
-
-		&:hover {
-			outline: dotted 1px $gray;
-		}
-
-		&:focus {
-			outline: none;
 		}
 	}
 
