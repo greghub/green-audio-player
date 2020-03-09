@@ -21,7 +21,7 @@
             -moz-osx-font-smoothing: grayscale;
         }
 
-        .ready-player-1, .ready-player-2, .ready-player-3 {
+        .ready-player-1, .ready-player-2, .ready-player-3, .ready-player-4 {
             margin: 24px 0;
         }
     </style>
@@ -42,6 +42,11 @@
             <source src="audio/example-2.mp3" type="audio/mpeg">
         </audio>
     </div>
+    <div class="ready-player-4 player-with-accessibility">
+        <audio crossorigin>
+            <source src="audio/example-2.mp3" type="audio/mpeg">
+        </audio>
+    </div>
 
     <script src="../dist/js/green-audio-player.js"></script>
     <script>
@@ -54,7 +59,14 @@
             GreenAudioPlayer.init({
                 selector: '.player-with-download',
                 stopOthersOnPlay: true,
-                showDownloadButton: true
+                showDownloadButton: true,
+                enableKeystrokes: true
+            });
+
+            GreenAudioPlayer.init({
+                selector: '.player-with-accessibility',
+                stopOthersOnPlay: true,
+                enableKeystrokes: true
             });
         });
     </script>

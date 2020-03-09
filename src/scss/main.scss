@@ -15,25 +15,42 @@
 	user-select: none;
 	background-color: $white;
 	box-sizing: border-box;
+	outline: none;
 
 	svg,
 	img {
 		display: block;
 	}
 
-	.play-pause-btn {
-		display: none;
-		cursor: pointer;
-	}
+	.holder {
+		position: relative;
 
-	.loading {
-		.loading__spinner {
-			width: 16px;
-			height: 16px;
-			border: 2px solid $light-gray;
-			border-right-color: transparent;
-			border-radius: 50%;
-			animation: spin 0.4s linear infinite;
+		.loading {
+			.loading__spinner {
+				position: absolute;
+				left: -3px;
+				bottom: 2px;
+				width: 16px;
+				height: 16px;
+				border: 2px solid $light-gray;
+				border-right-color: $transparent;
+				border-radius: 50%;
+				animation: spin 0.4s linear infinite;
+			}
+		}
+
+		.play-pause-btn {
+			visibility: hidden;
+			cursor: pointer;
+			outline: none;
+
+			&:hover {
+				outline: dotted 1px $gray;
+			}
+
+			&:focus {
+				outline: none;
+			}
 		}
 	}
 
@@ -81,8 +98,9 @@
 		flex-grow: 1;
 		justify-content: space-between;
 		align-items: center;
-		margin-left: 24px;
-		margin-right: 24px;
+		margin-left: 15px;
+		margin-right: 15px;
+		outline: none;
 
 		.controls__slider {
 			margin-left: 16px;
@@ -104,6 +122,14 @@
 		span {
 			cursor: default;
 		}
+
+		&:hover {
+			outline: dotted 1px $gray;
+		}
+
+		&:focus {
+			outline: none;
+		}
 	}
 
 	.volume {
@@ -111,13 +137,22 @@
 
 		.volume__button {
 			cursor: pointer;
+			outline: none;
+
+			&:hover {
+				outline: dotted 1px $gray;
+			}
+
+			&:focus {
+				outline: none;
+			}
 
 			&.open {
 				path {
 					fill: $primary;
+					}
 				}
 			}
-		}
 
 		.volume__controls {
 			width: 30px;
@@ -131,6 +166,33 @@
 			align-items: center;
 			display: flex;
 			z-index: 2;
+			outline: none;
+
+			.volume__slider {
+				margin-top: 12px;
+				margin-bottom: 12px;
+				width: 6px;
+				border-radius: 3px;
+
+				.volume__progress {
+					bottom: 0;
+					height: 100%;
+					width: 6px;
+
+					.volume__pin {
+						left: -5px;
+						top: -8px;
+					}
+				}
+			}
+
+			&:hover {
+				outline: dotted 1px $gray;
+			}
+
+			&:focus {
+				outline: none;
+			}
 
 			&.hidden {
 				display: none;
@@ -150,24 +212,6 @@
 				bottom: -164px;
 				left: -3px;
 			}
-
-			.volume__slider {
-				margin-top: 12px;
-				margin-bottom: 12px;
-				width: 6px;
-				border-radius: 3px;
-
-				.volume__progress {
-					bottom: 0;
-					height: 100%;
-					width: 6px;
-
-					.volume__pin {
-						left: -5px;
-						top: -8px;
-					}
-				}
-			}
 		}
 	}
 
@@ -175,5 +219,31 @@
 		display: none;
 		margin-left: 16px;
 		cursor: pointer;
+		outline: none;
+
+		&:hover {
+			outline: dotted 1px $gray;
+		}
+
+		&:focus {
+			outline: none;
+		}
 	}
+
+	&:focus {
+		outline: none;
+	}
+}
+
+.message__offscreen {
+	border: 0;
+	clip: rect(1px, 1px, 1px, 1px);
+	clip-path: inset(50%);
+	height: 1px;
+	margin: -1px;
+	overflow: hidden;
+	padding: 0;
+	position: absolute;
+	width: 1px;
+	word-wrap: normal;
 }

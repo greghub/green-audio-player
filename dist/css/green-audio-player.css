@@ -17,20 +17,31 @@
   border-radius: 4px;
   user-select: none;
   background-color: #fff;
-  box-sizing: border-box; }
+  box-sizing: border-box;
+  outline: none; }
   .green-audio-player svg,
   .green-audio-player img {
     display: block; }
-  .green-audio-player .play-pause-btn {
-    display: none;
-    cursor: pointer; }
-  .green-audio-player .loading .loading__spinner {
-    width: 16px;
-    height: 16px;
-    border: 2px solid #b0b0b0;
-    border-right-color: transparent;
-    border-radius: 50%;
-    animation: spin 0.4s linear infinite; }
+  .green-audio-player .holder {
+    position: relative; }
+    .green-audio-player .holder .loading .loading__spinner {
+      position: absolute;
+      left: -3px;
+      bottom: 2px;
+      width: 16px;
+      height: 16px;
+      border: 2px solid #b0b0b0;
+      border-right-color: rgba(0, 0, 0, 0);
+      border-radius: 50%;
+      animation: spin 0.4s linear infinite; }
+    .green-audio-player .holder .play-pause-btn {
+      visibility: hidden;
+      cursor: pointer;
+      outline: none; }
+      .green-audio-player .holder .play-pause-btn:hover {
+        outline: dotted 1px #999; }
+      .green-audio-player .holder .play-pause-btn:focus {
+        outline: none; }
   .green-audio-player .slider {
     flex-grow: 1;
     background-color: #d8d8d8;
@@ -67,8 +78,9 @@
     flex-grow: 1;
     justify-content: space-between;
     align-items: center;
-    margin-left: 24px;
-    margin-right: 24px; }
+    margin-left: 15px;
+    margin-right: 15px;
+    outline: none; }
     .green-audio-player .controls .controls__slider {
       margin-left: 16px;
       margin-right: 16px;
@@ -82,10 +94,19 @@
           top: -6px; }
     .green-audio-player .controls span {
       cursor: default; }
+    .green-audio-player .controls:hover {
+      outline: dotted 1px #999; }
+    .green-audio-player .controls:focus {
+      outline: none; }
   .green-audio-player .volume {
     position: relative; }
     .green-audio-player .volume .volume__button {
-      cursor: pointer; }
+      cursor: pointer;
+      outline: none; }
+      .green-audio-player .volume .volume__button:hover {
+        outline: dotted 1px #999; }
+      .green-audio-player .volume .volume__button:focus {
+        outline: none; }
       .green-audio-player .volume .volume__button.open path {
         fill: #44bfa3; }
     .green-audio-player .volume .volume__controls {
@@ -99,18 +120,8 @@
       flex-direction: column;
       align-items: center;
       display: flex;
-      z-index: 2; }
-      .green-audio-player .volume .volume__controls.hidden {
-        display: none; }
-      .green-audio-player .volume .volume__controls.top {
-        bottom: 52px;
-        left: -3px; }
-      .green-audio-player .volume .volume__controls.middle {
-        bottom: -54px;
-        left: 54px; }
-      .green-audio-player .volume .volume__controls.bottom {
-        bottom: -164px;
-        left: -3px; }
+      z-index: 2;
+      outline: none; }
       .green-audio-player .volume .volume__controls .volume__slider {
         margin-top: 12px;
         margin-bottom: 12px;
@@ -123,7 +134,41 @@
           .green-audio-player .volume .volume__controls .volume__slider .volume__progress .volume__pin {
             left: -5px;
             top: -8px; }
+      .green-audio-player .volume .volume__controls:hover {
+        outline: dotted 1px #999; }
+      .green-audio-player .volume .volume__controls:focus {
+        outline: none; }
+      .green-audio-player .volume .volume__controls.hidden {
+        display: none; }
+      .green-audio-player .volume .volume__controls.top {
+        bottom: 52px;
+        left: -3px; }
+      .green-audio-player .volume .volume__controls.middle {
+        bottom: -54px;
+        left: 54px; }
+      .green-audio-player .volume .volume__controls.bottom {
+        bottom: -164px;
+        left: -3px; }
   .green-audio-player .download {
     display: none;
     margin-left: 16px;
-    cursor: pointer; }
+    cursor: pointer;
+    outline: none; }
+    .green-audio-player .download:hover {
+      outline: dotted 1px #999; }
+    .green-audio-player .download:focus {
+      outline: none; }
+  .green-audio-player:focus {
+    outline: none; }
+
+.message__offscreen {
+  border: 0;
+  clip: rect(1px, 1px, 1px, 1px);
+  clip-path: inset(50%);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+  word-wrap: normal; }
