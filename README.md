@@ -77,20 +77,23 @@ GreenAudioPlayer.init({
 Refer to `/examples` folder for demos of single and multiple players.
 
 A demo with alternate 'css' and 'svg' sources can be found under `/examples/single-instance-2.html`.
+
 ## Options
 
 | Option | Description | Values | Default |
 |--------|-------------|--------|---------|
 | stopOthersOnPlay | Whether other audio players shall get paused when hitting play | `true`, `false` | `false`
 | showDownloadButton | Allow audio file download. Displays the download button.  | `true`, `false` | `false`
-| enableKeystrokes¹ | Players have keystrokes associated with functions. | `true`, `false` | `false`
-
-¹ Does not support multiple players simultaneously.
+| enableKeystrokes | Players have keystrokes associated with functions. | `true`, `false` | `false`
 
 ## Keystrokes (when enabled)
-pause/play [Spacebar]
+
+cycle to next tab [Tab]
+cycle to previous tab [Shift + Tab]
+pause/play [Enter or Spacebar]
 fast-forward [Right Arrow]
 rewind [Left Arrow]
-show/hide volume slider [Enter]
+show/hide volume slider [Enter or Spacebar]
 volume increase [Up Arrow]
 volume decrease [Down Arrow]
+download [Enter]

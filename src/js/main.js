@@ -22,6 +22,8 @@ class GreenAudioPlayer {
         this.download = this.audioPlayer.querySelector('.download');
         this.downloadLink = this.audioPlayer.querySelector('.download__link');
         this.span = this.audioPlayer.querySelectorAll('.message__offscreen');
+        this.svg = this.audioPlayer.getElementsByTagName('svg');
+        this.img = this.audioPlayer.getElementsByTagName('img');
         this.draggableClasses = ['pin'];
         this.currentlyDragged = null;
         this.stopOthersOnPlay = opts.stopOthersOnPlay || false;
@@ -30,6 +32,17 @@ class GreenAudioPlayer {
         if (!this.enableKeystrokes) {
             for (let i = 0; i < this.span.length; i++) {
                 this.span[i].outerHTML = '';
+            }
+        } else {
+            this.sliders[0].setAttribute('tabindex', 0);
+            this.sliders[1].setAttribute('tabindex', 0);
+            this.downloadLink.setAttribute('tabindex', -1);
+            for (let i = 0; i < this.svg.length; i++) {
+                this.svg[i].setAttribute('tabindex', 0);
+                this.svg[i].setAttribute('focusable', true);
+            }
+            for (let i = 0; i < this.img.length; i++) {
+                this.img[i].setAttribute('tabindex', 0);
             }
         }
 
@@ -67,7 +80,6 @@ class GreenAudioPlayer {
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="24" viewBox="0 0 18 24">
                         <path fill="#566574" fill-rule="evenodd" d="M18 12L0 24V0" class="play-pause-btn__icon"/>
                     </svg>
-                    <span class="message__offscreen">Press Spacebar to toggle pause and play.</span>
                 </div>
             </div>
 
@@ -77,7 +89,6 @@ class GreenAudioPlayer {
                     <div class="controls__progress gap-progress" aria-label="Time Slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" role="slider">
                         <div class="pin progress__pin" data-method="rewind"></div>
                     </div>
-                    <span class="message__offscreen">Use Left/Right Arrow keys to fast-forward or rewind in increments.</span>
                 </div>
                 <span class="controls__total-time">00:00</span>
             </div>
@@ -87,16 +98,16 @@ class GreenAudioPlayer {
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                         <path class="volume__speaker" fill="#566574" fill-rule="evenodd" d="M14.667 0v2.747c3.853 1.146 6.666 4.72 6.666 8.946 0 4.227-2.813 7.787-6.666 8.934v2.76C20 22.173 24 17.4 24 11.693 24 5.987 20 1.213 14.667 0zM18 11.693c0-2.36-1.333-4.386-3.333-5.373v10.707c2-.947 3.333-2.987 3.333-5.334zm-18-4v8h5.333L12 22.36V1.027L5.333 7.693H0z"/>
                     </svg>
-                    <span class="message__offscreen">Press Enter to show volume slider.</span>
+                    <span class="message__offscreen">Press Enter or Space to show volume slider.</span>
                 </div>
                 <div class="volume__controls hidden">
                     <div class="volume__slider slider" data-direction="vertical">
                         <div class="volume__progress gap-progress" aria-label="Volume Slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="81" role="slider">
                             <div class="pin volume__pin" data-method="changeVolume"></div>
                         </div>
+                        <span class="message__offscreen">Use Up/Down Arrow keys to increase or decrease volume.</span>
                     </div>
                 </div>
-                <span class="message__offscreen">Use Up/Down Arrow keys to increase or decrease volume.</span>
             </div>
 
             <div class="download">
@@ -179,7 +190,7 @@ class GreenAudioPlayer {
         if (this.isDevice) {
             // iOS does not support "canplay" event
             this.player.addEventListener('loadedmetadata', this.hideLoadingIndicator.bind(self));
-            // iOS does not let "volume" property be set programmatically
+            // iOS does not let "volume" property to be set programmatically
             this.audioPlayer.querySelector('.volume').style.display = 'none';
             this.audioPlayer.querySelector('.controls').style.marginRight = '0';
         }
@@ -360,12 +371,38 @@ class GreenAudioPlayer {
         const evt = event || window.event;
         if (this.enableKeystrokes) {
             switch (evt.keyCode) {
-            case 13: this.showhideVolume(); break;
-            case 32: this.togglePlay(); break;
-            case 37: this.setCurrentTime(-5); break;
-            case 39: this.setCurrentTime(5); break;
-            case 38: this.showVolume(); this.setVolume(0.05); break;
-            case 40: this.showVolume(); this.setVolume(-0.05); break;
+            case 13: case 32: if (document.activeElement.parentNode === this.playPauseBtn) {
+                this.togglePlay();
+            } else if (document.activeElement.parentNode === this.volumeBtn
+                || document.activeElement === this.sliders[1]) {
+                if (document.activeElement === this.sliders[1]) {
+                    try { // IE 11 not allowing programmatic focus on svg elements
+                        this.volumeBtn.children[0].focus();
+                    } catch (error) {
+                        this.volumeBtn.focus();
+                    }
+                }
+                this.showhideVolume();
+            }
+                break;
+            case 37: if (document.activeElement === this.sliders[0]) {
+                this.setCurrentTime(-5);
+            }
+                break;
+            case 39: if (document.activeElement === this.sliders[0]) {
+                this.setCurrentTime(+5);
+            }
+                break;
+            case 38: if (document.activeElement.parentNode === this.volumeBtn
+                || document.activeElement === this.sliders[1]) {
+                this.showVolume(); this.setVolume(0.05);
+            }
+                break;
+            case 40: if (document.activeElement.parentNode === this.volumeBtn
+                || document.activeElement === this.sliders[1]) {
+                this.showVolume(); this.setVolume(-0.05);
+            }
+                break;
             default: break;
             }
         }

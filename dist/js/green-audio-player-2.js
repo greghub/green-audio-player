@@ -147,8 +147,8 @@ function () {
       var self = this;
 
       if (this.isDevice) {
-        // iOS and Android devices do not support "canplay" event
-        this.player.addEventListener('loadedmetadata', this.hideLoadingIndicator.bind(self)); // iOS and Android devices do not let "volume" property be set programmatically
+        // iOS does not support "canplay" event
+        this.player.addEventListener('loadedmetadata', this.hideLoadingIndicator.bind(self)); // iOS does not let "volume" property be set programmatically
 
         this.audioPlayer.querySelector('.volume').style.display = 'none';
         this.audioPlayer.querySelector('.controls').style.marginRight = '0';
@@ -348,29 +348,52 @@ function () {
 
       switch (evt.keyCode) {
         case 13:
-          this.showhideVolume();
-          break;
-
         case 32:
-          this.togglePlay();
+          if (document.activeElement.parentNode === this.playPauseBtn) {
+            this.togglePlay();
+          } else if (document.activeElement.parentNode === this.volumeBtn || document.activeElement === this.sliders[1]) {
+            if (document.activeElement === this.sliders[1]) {
+              try {
+                // IE 11 not allowing programmatic focus on svg elements
+                this.volumeBtn.children[0].focus();
+              } catch (error) {
+                this.volumeBtn.focus();
+              }
+            }
+
+            this.showhideVolume();
+          }
+
           break;
 
         case 37:
-          this.setCurrentTime(-5);
+          if (document.activeElement === this.sliders[0]) {
+            this.setCurrentTime(-5);
+          }
+
           break;
 
         case 39:
-          this.setCurrentTime(5);
+          if (document.activeElement === this.sliders[0]) {
+            this.setCurrentTime(+5);
+          }
+
           break;
 
         case 38:
-          this.showVolume();
-          this.setVolume(0.05);
+          if (document.activeElement.parentNode === this.volumeBtn || document.activeElement === this.sliders[1]) {
+            this.showVolume();
+            this.setVolume(0.05);
+          }
+
           break;
 
         case 40:
-          this.showVolume();
-          this.setVolume(-0.05);
+          if (document.activeElement.parentNode === this.volumeBtn || document.activeElement === this.sliders[1]) {
+            this.showVolume();
+            this.setVolume(-0.05);
+          }
+
           break;
 
         default:
@@ -390,7 +413,7 @@ function () {
   }], [{
     key: "getTemplate",
     value: function getTemplate() {
-      return "\n            <div class=\"holder\">\n                <div class=\"loading\">\n                    <div class=\"loading__spinner\"></div>\n                </div>\n\n                <div class=\"play-pause-btn\" aria-label=\"Play\">\n                    <svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 20 20\">\n                        <path fill=\"#008000\" fill-rule=\"nonzero\" d=\"M16.4 10.5q.4-.2.4-.5t-.4-.55L5.05 2.5q-.35-.2-.6-.05-.25.15-.25.55v14q0 .4.25.55.25.15.6-.1L16.4 10.5z\" class=\"play-pause-btn__icon\"/>\n                    </svg>\n                    <span class=\"message__offscreen\">Press Spacebar to toggle pause and play.</span>\n                </div>\n            </div>\n\n            <div class=\"controls\">\n                <span class=\"controls__current-time\" aria-live=\"off\" role=\"timer\">00:00</span>\n                <div class=\"controls__slider slider\" data-direction=\"horizontal\">\n                    <div class=\"controls__progress gap-progress\" aria-label=\"Time Slider\" aria-valuemin=\"0\" aria-valuemax=\"100\" aria-valuenow=\"0\" role=\"slider\">\n                        <div class=\"pin progress__pin\" data-method=\"rewind\"></div>\n                    </div>\n                    <span class=\"message__offscreen\">Use Left/Right Arrow keys to fast-forward or rewind in increments.</span>\n                </div>\n                <span class=\"controls__total-time\">00:00</span>\n            </div>\n\n            <div class=\"volume\">\n                <div class=\"volume__button\" aria-label=\"Close\">\n                    <svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 20 20\">\n                        <path class=\"volume__speaker\" fill=\"#008000\" fill-rule=\"evenodd\" d=\"M11.85 2.7q-.25-.1-.55.15L7.75 5.5q-.75.6-1.8.6H2.8q-1 0-1 1v5.75q0 1 1 1h3.15q1 0 1 .05l4.35 3.2q.3.25.55.15.25-.15.25-.55V3.25q0-.4-.25-.55z\"/>\n                        <path class=\"volume__speaker-one\" stroke=\"#008000\" stroke-width=\"1.5\" stroke-linecap=\"round\" fill=\"none\" d=\"M13.35 6.1h.4l.55.15.65.4q1 1 1 3.35-.05 2.1-.85 3.05-.15.2-.7.6l-.65.2h-.4\"/>\n                        <path class=\"volume__speaker-two\" stroke=\"#008000\" stroke-width=\"1.5\" stroke-linecap=\"round\" fill=\"none\" d=\"M14.65 2.25h.4l.75.15q1.1.5 1.7 1.7 1.05 2.05 1 5.9 0 3.4-.9 5.45-.65 1.6-1.75 2.05-.35.2-.7.2h-.5\"/>\n                        <path class=\"volume__speaker-three\" stroke=\"none\" stroke-width=\"1.5\" stroke-linecap=\"round\" fill=\"none\" d=\"M13.35 7.25l5.4 5.4m-5.4 0l5.4-5.4\"/>\n                    </svg>\n                    <span class=\"message__offscreen\">Press Enter to show volume slider.</span>\n                </div>\n                <div class=\"volume__controls hidden\">\n                    <div class=\"volume__slider slider\" data-direction=\"vertical\">\n                        <div class=\"volume__progress gap-progress\" aria-label=\"Volume Slider\" aria-valuemin=\"0\" aria-valuemax=\"100\" aria-valuenow=\"81\" role=\"slider\">\n                            <div class=\"pin volume__pin\" data-method=\"changeVolume\"></div>\n                        </div>\n                    </div>\n                </div>\n                <span class=\"message__offscreen\">Use Up/Down Arrow keys to increase or decrease volume.</span>\n            </div>\n        ";
+      return "\n            <div class=\"holder\">\n                <div class=\"loading\">\n                    <div class=\"loading__spinner\"></div>\n                </div>\n\n                <div class=\"play-pause-btn\" aria-label=\"Play\">\n                    <svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" tabindex=\"0\" focusable=\"true\">\n                        <path fill=\"#008000\" fill-rule=\"nonzero\" d=\"M16.4 10.5q.4-.2.4-.5t-.4-.55L5.05 2.5q-.35-.2-.6-.05-.25.15-.25.55v14q0 .4.25.55.25.15.6-.1L16.4 10.5z\" class=\"play-pause-btn__icon\"/>\n                    </svg>\n                </div>\n            </div>\n\n            <div class=\"controls\">\n                <span class=\"controls__current-time\" aria-live=\"off\" role=\"timer\">00:00</span>\n                <div class=\"controls__slider slider\" data-direction=\"horizontal\" tabindex=\"0\">\n                    <div class=\"controls__progress gap-progress\" aria-label=\"Time Slider\" aria-valuemin=\"0\" aria-valuemax=\"100\" aria-valuenow=\"0\" role=\"slider\">\n                        <div class=\"pin progress__pin\" data-method=\"rewind\"></div>\n                    </div>\n                </div>\n                <span class=\"controls__total-time\">00:00</span>\n            </div>\n\n            <div class=\"volume\">\n                <div class=\"volume__button\" aria-label=\"Close\">\n                    <svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" tabindex=\"0\" focusable=\"true\">\n                        <path class=\"volume__speaker\" fill=\"#008000\" fill-rule=\"evenodd\" d=\"M11.85 2.7q-.25-.1-.55.15L7.75 5.5q-.75.6-1.8.6H2.8q-1 0-1 1v5.75q0 1 1 1h3.15q1 0 1 .05l4.35 3.2q.3.25.55.15.25-.15.25-.55V3.25q0-.4-.25-.55z\"/>\n                        <path class=\"volume__speaker-one\" stroke=\"#008000\" stroke-width=\"1.5\" stroke-linecap=\"round\" fill=\"none\" d=\"M13.35 6.1h.4l.55.15.65.4q1 1 1 3.35-.05 2.1-.85 3.05-.15.2-.7.6l-.65.2h-.4\"/>\n                        <path class=\"volume__speaker-two\" stroke=\"#008000\" stroke-width=\"1.5\" stroke-linecap=\"round\" fill=\"none\" d=\"M14.65 2.25h.4l.75.15q1.1.5 1.7 1.7 1.05 2.05 1 5.9 0 3.4-.9 5.45-.65 1.6-1.75 2.05-.35.2-.7.2h-.5\"/>\n                        <path class=\"volume__speaker-three\" stroke=\"none\" stroke-width=\"1.5\" stroke-linecap=\"round\" fill=\"none\" d=\"M13.35 7.25l5.4 5.4m-5.4 0l5.4-5.4\"/>\n                    </svg>\n                    <span class=\"message__offscreen\">Press Enter or Space to show volume slider.</span>\n                </div>\n                <div class=\"volume__controls hidden\">\n                    <div class=\"volume__slider slider\" data-direction=\"vertical\" tabindex=\"0\">\n                        <div class=\"volume__progress gap-progress\" aria-label=\"Volume Slider\" aria-valuemin=\"0\" aria-valuemax=\"100\" aria-valuenow=\"81\" role=\"slider\">\n                            <div class=\"pin volume__pin\" data-method=\"changeVolume\"></div>\n                        </div>\n                        <span class=\"message__offscreen\">Use Up/Down Arrow keys to increase or decrease volume.</span>\n                    </div>\n                </div>\n            </div>\n        ";
     }
   }, {
     key: "formatTime",
