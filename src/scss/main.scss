@@ -17,6 +17,19 @@
 	box-sizing: border-box;
 	outline: none;
 
+	&.player-accessible {
+		.play-pause-btn,
+		.controls,
+		.volume__button,
+		.volume__controls,
+		.download {
+			&:hover,
+			&:focus {
+				outline: dotted 1px $gray;
+			}
+		}
+	}
+
 	svg,
 	img {
 		display: block;
@@ -43,10 +56,6 @@
 			visibility: hidden;
 			cursor: pointer;
 			outline: none;
-
-			&:hover {
-				outline: dotted 1px $gray;
-			}
 
 			&:focus {
 				outline: none;
@@ -123,10 +132,6 @@
 			cursor: default;
 		}
 
-		&:hover {
-			outline: dotted 1px $gray;
-		}
-
 		&:focus {
 			outline: none;
 		}
@@ -138,10 +143,6 @@
 		.volume__button {
 			cursor: pointer;
 			outline: none;
-
-			&:hover {
-				outline: dotted 1px $gray;
-			}
 
 			&:focus {
 				outline: none;
@@ -186,10 +187,6 @@
 				}
 			}
 
-			&:hover {
-				outline: dotted 1px $gray;
-			}
-
 			&:focus {
 				outline: none;
 			}
@@ -220,10 +217,6 @@
 		margin-left: 16px;
 		cursor: pointer;
 		outline: none;
-
-		&:hover {
-			outline: dotted 1px $gray;
-		}
 
 		&:focus {
 			outline: none;

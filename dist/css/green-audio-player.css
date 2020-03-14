@@ -19,6 +19,16 @@
   background-color: #fff;
   box-sizing: border-box;
   outline: none; }
+  .green-audio-player.player-accessible .play-pause-btn:hover, .green-audio-player.player-accessible .play-pause-btn:focus,
+  .green-audio-player.player-accessible .controls:hover,
+  .green-audio-player.player-accessible .controls:focus,
+  .green-audio-player.player-accessible .volume__button:hover,
+  .green-audio-player.player-accessible .volume__button:focus,
+  .green-audio-player.player-accessible .volume__controls:hover,
+  .green-audio-player.player-accessible .volume__controls:focus,
+  .green-audio-player.player-accessible .download:hover,
+  .green-audio-player.player-accessible .download:focus {
+    outline: dotted 1px #999; }
   .green-audio-player svg,
   .green-audio-player img {
     display: block; }
@@ -38,8 +48,6 @@
       visibility: hidden;
       cursor: pointer;
       outline: none; }
-      .green-audio-player .holder .play-pause-btn:hover {
-        outline: dotted 1px #999; }
       .green-audio-player .holder .play-pause-btn:focus {
         outline: none; }
   .green-audio-player .slider {
@@ -94,8 +102,6 @@
           top: -6px; }
     .green-audio-player .controls span {
       cursor: default; }
-    .green-audio-player .controls:hover {
-      outline: dotted 1px #999; }
     .green-audio-player .controls:focus {
       outline: none; }
   .green-audio-player .volume {
@@ -103,8 +109,6 @@
     .green-audio-player .volume .volume__button {
       cursor: pointer;
       outline: none; }
-      .green-audio-player .volume .volume__button:hover {
-        outline: dotted 1px #999; }
       .green-audio-player .volume .volume__button:focus {
         outline: none; }
       .green-audio-player .volume .volume__button.open path {
@@ -134,8 +138,6 @@
           .green-audio-player .volume .volume__controls .volume__slider .volume__progress .volume__pin {
             left: -5px;
             top: -8px; }
-      .green-audio-player .volume .volume__controls:hover {
-        outline: dotted 1px #999; }
       .green-audio-player .volume .volume__controls:focus {
         outline: none; }
       .green-audio-player .volume .volume__controls.hidden {
@@ -154,8 +156,6 @@
     margin-left: 16px;
     cursor: pointer;
     outline: none; }
-    .green-audio-player .download:hover {
-      outline: dotted 1px #999; }
     .green-audio-player .download:focus {
       outline: none; }
   .green-audio-player:focus {

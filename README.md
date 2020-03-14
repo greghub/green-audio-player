@@ -84,14 +84,28 @@ Refer to `/examples` folder for demos of single and multiple players.
 | showDownloadButton | Allow audio file download. Displays the download button.  | `true`, `false` | `false`
 | enableKeystrokes | Players have keystrokes associated with functions. | `true`, `false` | `false`
 
-## Keystrokes (when enabled)
+## Accessibility
 
-cycle to next tab [Tab]
-cycle to previous tab [Shift + Tab]
-pause/play [Enter or Spacebar]
-fast-forward [Right Arrow]
-rewind [Left Arrow]
-show/hide volume slider [Enter or Spacebar]
-volume increase [Up Arrow]
-volume decrease [Down Arrow]
-download [Enter]
+In order to improve accessibility, keyboard navigation can be enabled, by passing the `enableKeystrokes` option.
+By default, the outline is disabled on elements.
+If you want to add outline to elements add `player-accessible` class to the player element:
+
+```html
+<div class="player-1 player-accessible">
+...
+</div>
+```
+
+You can focus on elements with Tab key and use the following keys to use the player controls.
+
+| Key | Action |
+|--------|-------------|
+| Tab | Focus on the next element | 
+| Shift + Tab | Focus on the previous element | 
+| Enter or Spacebar | Pause/Play | 
+| Right Arrow | Fast-forward | 
+| Left Arrow | Rewind | 
+| Enter or Spacebar | Show/hide volume slider |
+| Up Arrow | Increase volume |
+| Down Arrow | Decrease volume |
+| Enter | Download | 
