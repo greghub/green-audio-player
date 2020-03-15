@@ -30,6 +30,16 @@ class GreenAudioPlayer {
         this.enableKeystrokes = opts.enableKeystrokes || false;
         this.showTooltips = opts.showTooltips || false;
 
+        this.labels = {
+            volume: {
+                open: 'Open Volume Controls',
+                close: 'Close Volume Controls',
+            },
+            pause: 'Pause',
+            play: 'Play',
+            download: 'Download',
+        };
+
         if (!this.enableKeystrokes) {
             for (let i = 0; i < this.span.length; i++) {
                 this.span[i].outerHTML = '';
@@ -51,9 +61,9 @@ class GreenAudioPlayer {
         }
 
         if (this.showTooltips) {
-            this.playPauseBtn.setAttribute('title', 'Play');
-            this.volumeBtn.setAttribute('title', 'Open');
-            this.downloadLink.setAttribute('title', 'Download');
+            this.playPauseBtn.setAttribute('title', this.labels.play);
+            this.volumeBtn.setAttribute('title', this.labels.volume.open);
+            this.downloadLink.setAttribute('title', this.labels.download);
         }
 
         if (opts.showDownloadButton || false) {
@@ -71,9 +81,12 @@ class GreenAudioPlayer {
                 promise.then(() => {
                     const playPauseButton = self.player.parentElement.querySelector('.play-pause-btn__icon');
                     playPauseButton.attributes.d.value = 'M0 0h6v24H0zM12 0h6v24h-6z';
-                    self.playPauseBtn.setAttribute('aria-label', 'Pause');
-                    self.hasSetAttribute(self.playPauseBtn, 'title', 'Pause');
-                }).catch(() => { /* Autoplay was prevented. */ });
+                    self.playPauseBtn.setAttribute('aria-label', this.labels.pause);
+                    self.hasSetAttribute(self.playPauseBtn, 'title', this.labels.pause);
+                }).catch(() => {
+                    // eslint-disable-next-line no-console
+                    console.error('Green Audio Player Error: Autoplay has been prevented, because it is not allowed by this browser');
+                });
             }
         }
         if ('preload' in this.player.attributes && this.player.attributes.preload.value === 'none') {
@@ -116,7 +129,7 @@ class GreenAudioPlayer {
             </div>
 
             <div class="volume">
-                <div class="volume__button" aria-label="Open" role="button">
+                <div class="volume__button" aria-label="Open Volume Controls" role="button">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                         <path class="volume__speaker" fill="#566574" fill-rule="evenodd" d="M14.667 0v2.747c3.853 1.146 6.666 4.72 6.666 8.946 0 4.227-2.813 7.787-6.666 8.934v2.76C20 22.173 24 17.4 24 11.693 24 5.987 20 1.213 14.667 0zM18 11.693c0-2.36-1.333-4.386-3.333-5.373v10.707c2-.947 3.333-2.987 3.333-5.334zm-18-4v8h5.333L12 22.36V1.027L5.333 7.693H0z"/>
                     </svg>
@@ -206,11 +219,11 @@ class GreenAudioPlayer {
         this.player.addEventListener('ended', () => {
             GreenAudioPlayer.pausePlayer(self.player, 'ended');
             self.player.currentTime = 0;
-            self.playPauseBtn.setAttribute('aria-label', 'Play');
-            self.hasSetAttribute(self.playPauseBtn, 'title', 'Play');
+            self.playPauseBtn.setAttribute('aria-label', this.labels.play);
+            self.hasSetAttribute(self.playPauseBtn, 'title', this.labels.play);
         });
 
-        this.volumeBtn.addEventListener('click', this.showhideVolume.bind(self));
+        this.volumeBtn.addEventListener('click', this.showHideVolume.bind(self));
         window.addEventListener('resize', self.directionAware.bind(self));
         window.addEventListener('scroll', self.directionAware.bind(self));
 
@@ -336,24 +349,24 @@ class GreenAudioPlayer {
     }
 
     showVolume() {
-        if (this.volumeBtn.getAttribute('aria-attribute') === 'Open') {
+        if (this.volumeBtn.getAttribute('aria-attribute') === this.labels.volume.open) {
             this.volumeControls.classList.remove('hidden');
             this.volumeBtn.classList.add('open');
-            this.volumeBtn.setAttribute('aria-label', 'Close');
-            this.hasSetAttribute(this.volumeBtn, 'title', 'Close');
+            this.volumeBtn.setAttribute('aria-label', this.labels.volume.close);
+            this.hasSetAttribute(this.volumeBtn, 'title', this.labels.volume.close);
         }
     }
 
-    showhideVolume() {
+    showHideVolume() {
         this.volumeControls.classList.toggle('hidden');
 
-        if (this.volumeBtn.getAttribute('aria-label') === 'Open') {
-            this.volumeBtn.setAttribute('aria-label', 'Close');
-            this.hasSetAttribute(this.volumeBtn, 'title', 'Close');
+        if (this.volumeBtn.getAttribute('aria-label') === this.labels.volume.open) {
+            this.volumeBtn.setAttribute('aria-label', this.labels.volume.close);
+            this.hasSetAttribute(this.volumeBtn, 'title', this.labels.volume.close);
             this.volumeBtn.classList.add('open');
         } else {
-            this.volumeBtn.setAttribute('aria-label', 'Open');
-            this.hasSetAttribute(this.volumeBtn, 'title', 'Open');
+            this.volumeBtn.setAttribute('aria-label', this.labels.volume.open);
+            this.hasSetAttribute(this.volumeBtn, 'title', this.labels.volume.open);
             this.volumeBtn.classList.remove('open');
         }
     }
@@ -383,12 +396,12 @@ class GreenAudioPlayer {
                 GreenAudioPlayer.stopOtherPlayers();
             }
             GreenAudioPlayer.playPlayer(this.player);
-            this.playPauseBtn.setAttribute('aria-label', 'Pause');
-            this.hasSetAttribute(this.playPauseBtn, 'title', 'Pause');
+            this.playPauseBtn.setAttribute('aria-label', this.labels.pause);
+            this.hasSetAttribute(this.playPauseBtn, 'title', this.labels.pause);
         } else {
             GreenAudioPlayer.pausePlayer(this.player, 'toggle');
-            this.playPauseBtn.setAttribute('aria-label', 'Play');
-            this.hasSetAttribute(this.playPauseBtn, 'title', 'Play');
+            this.playPauseBtn.setAttribute('aria-label', this.labels.play);
+            this.hasSetAttribute(this.playPauseBtn, 'title', this.labels.play);
         }
     }
 
@@ -444,7 +457,7 @@ class GreenAudioPlayer {
                             this.volumeBtn.focus();
                         }
                     }
-                    this.showhideVolume();
+                    this.showHideVolume();
                 }
                 if (evt.keyCode === 13 && this.showDownload
                     && document.activeElement.parentNode === this.downloadLink) {
