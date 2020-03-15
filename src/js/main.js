@@ -28,14 +28,18 @@ class GreenAudioPlayer {
         this.currentlyDragged = null;
         this.stopOthersOnPlay = opts.stopOthersOnPlay || false;
         this.enableKeystrokes = opts.enableKeystrokes || false;
+        this.showTooltips = opts.showTooltips || false;
 
         if (!this.enableKeystrokes) {
             for (let i = 0; i < this.span.length; i++) {
                 this.span[i].outerHTML = '';
             }
         } else {
+            const self = this;
+            window.addEventListener('keydown', this.pressKb.bind(self), false);
             this.sliders[0].setAttribute('tabindex', 0);
             this.sliders[1].setAttribute('tabindex', 0);
+            this.download.setAttribute('tabindex', -1);
             this.downloadLink.setAttribute('tabindex', -1);
             for (let i = 0; i < this.svg.length; i++) {
                 this.svg[i].setAttribute('tabindex', 0);
@@ -44,6 +48,12 @@ class GreenAudioPlayer {
             for (let i = 0; i < this.img.length; i++) {
                 this.img[i].setAttribute('tabindex', 0);
             }
+        }
+
+        if (this.showTooltips) {
+            this.playPauseBtn.setAttribute('title', 'Play');
+            this.volumeBtn.setAttribute('title', 'Open');
+            this.downloadLink.setAttribute('title', 'Download');
         }
 
         if (opts.showDownloadButton || false) {
@@ -55,8 +65,20 @@ class GreenAudioPlayer {
         this.overcomeIosLimitations();
 
         if ('autoplay' in this.player.attributes) {
-            const playPauseButton = this.player.parentElement.querySelector('.play-pause-btn__icon');
-            playPauseButton.attributes.d.value = 'M0 0h6v24H0zM12 0h6v24h-6z';
+            const self = this;
+            const promise = this.player.play();
+            if (promise !== undefined) {
+                promise.then(() => {
+                    const playPauseButton = self.player.parentElement.querySelector('.play-pause-btn__icon');
+                    playPauseButton.attributes.d.value = 'M0 0h6v24H0zM12 0h6v24h-6z';
+                    self.playPauseBtn.setAttribute('aria-label', 'Pause');
+                    self.hasSetAttribute(self.playPauseBtn, 'title', 'Pause');
+                }).catch(() => { /* Autoplay was prevented. */ });
+            }
+        }
+        if ('preload' in this.player.attributes && this.player.attributes.preload.value === 'none') {
+            this.playPauseBtn.style.visibility = 'visible';
+            this.loading.style.visibility = 'hidden';
         }
     }
 
@@ -76,7 +98,7 @@ class GreenAudioPlayer {
                     <div class="loading__spinner"></div>
                 </div>
 
-                <div class="play-pause-btn" aria-label="Play">
+                <div class="play-pause-btn" aria-label="Play" role="button">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="24" viewBox="0 0 18 24">
                         <path fill="#566574" fill-rule="evenodd" d="M18 12L0 24V0" class="play-pause-btn__icon"/>
                     </svg>
@@ -94,7 +116,7 @@ class GreenAudioPlayer {
             </div>
 
             <div class="volume">
-                <div class="volume__button" aria-label="Close">
+                <div class="volume__button" aria-label="Open" role="button">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                         <path class="volume__speaker" fill="#566574" fill-rule="evenodd" d="M14.667 0v2.747c3.853 1.146 6.666 4.72 6.666 8.946 0 4.227-2.813 7.787-6.666 8.934v2.76C20 22.173 24 17.4 24 11.693 24 5.987 20 1.213 14.667 0zM18 11.693c0-2.36-1.333-4.386-3.333-5.373v10.707c2-.947 3.333-2.987 3.333-5.334zm-18-4v8h5.333L12 22.36V1.027L5.333 7.693H0z"/>
                     </svg>
@@ -111,7 +133,7 @@ class GreenAudioPlayer {
             </div>
 
             <div class="download">
-                <a class="download__link" href="" download="">
+                <a class="download__link" href="" download="" aria-label="Download" role="button">
                     <svg width="24" height="24" fill="#566574" enable-background="new 0 0 29.978 29.978" version="1.1" viewBox="0 0 29.978 29.978" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
                         <path d="m25.462 19.105v6.848h-20.947v-6.848h-4.026v8.861c0 1.111 0.9 2.012 2.016 2.012h24.967c1.115 0 2.016-0.9 2.016-2.012v-8.861h-4.026z"/>
                         <path d="m14.62 18.426l-5.764-6.965s-0.877-0.828 0.074-0.828 3.248 0 3.248 0 0-0.557 0-1.416v-8.723s-0.129-0.494 0.615-0.494h4.572c0.536 0 0.524 0.416 0.524 0.416v8.742 1.266s1.842 0 2.998 0c1.154 0 0.285 0.867 0.285 0.867s-4.904 6.51-5.588 7.193c-0.492 0.495-0.964-0.058-0.964-0.058z"/>
@@ -129,9 +151,17 @@ class GreenAudioPlayer {
                 self.currentlyDragged = event.target;
                 const handleMethod = self.currentlyDragged.dataset.method;
                 const listener = self[handleMethod].bind(self);
-
                 window.addEventListener('mousemove', listener, false);
+                if (self.currentlyDragged.parentElement.parentElement === self.sliders[0]) {
+                    self.paused = self.player.paused;
+                    if (self.paused === false) self.togglePlay();
+                }
                 window.addEventListener('mouseup', () => {
+                    if (self.currentlyDragged !== false
+                        && self.currentlyDragged.parentElement.parentElement === self.sliders[0]
+                        && self.paused !== self.player.paused) {
+                        self.togglePlay();
+                    }
                     self.currentlyDragged = false;
                     window.removeEventListener('mousemove', listener, false);
                 }, false);
@@ -142,12 +172,19 @@ class GreenAudioPlayer {
         self.audioPlayer.addEventListener('touchstart', (event) => {
             if (self.isDraggable(event.target)) {
                 [self.currentlyDragged] = event.targetTouches;
-
                 const handleMethod = self.currentlyDragged.target.dataset.method;
                 const listener = self[handleMethod].bind(self);
-
                 window.addEventListener('touchmove', listener, false);
+                if (self.currentlyDragged.parentElement.parentElement === self.sliders[0]) {
+                    self.paused = self.player.paused;
+                    if (self.paused === false) self.togglePlay();
+                }
                 window.addEventListener('touchend', () => {
+                    if (self.currentlyDragged !== false
+                        && self.currentlyDragged.parentElement.parentElement === self.sliders[0]
+                        && self.paused !== self.player.paused) {
+                        self.togglePlay();
+                    }
                     self.currentlyDragged = false;
                     window.removeEventListener('touchmove', listener, false);
                 }, false);
@@ -159,11 +196,10 @@ class GreenAudioPlayer {
         this.playPauseBtn.addEventListener('click', this.togglePlay.bind(self));
         this.player.addEventListener('timeupdate', this.updateProgress.bind(self));
         this.player.addEventListener('volumechange', this.updateVolume.bind(self));
-        self.player.volume = 0.81;
+        this.player.volume = 0.81;
         this.player.addEventListener('loadedmetadata', () => {
-            this.totalTime.textContent = GreenAudioPlayer.formatTime(self.player.duration);
+            self.totalTime.textContent = GreenAudioPlayer.formatTime(self.player.duration);
         });
-        window.addEventListener('keydown', this.pressKb.bind(self), false);
         this.player.addEventListener('seeking', this.showLoadingIndicator.bind(self));
         this.player.addEventListener('seeked', this.hideLoadingIndicator.bind(self));
         this.player.addEventListener('canplay', this.hideLoadingIndicator.bind(self));
@@ -171,11 +207,12 @@ class GreenAudioPlayer {
             GreenAudioPlayer.pausePlayer(self.player, 'ended');
             self.player.currentTime = 0;
             self.playPauseBtn.setAttribute('aria-label', 'Play');
+            self.hasSetAttribute(self.playPauseBtn, 'title', 'Play');
         });
 
+        this.volumeBtn.addEventListener('click', this.showhideVolume.bind(self));
         window.addEventListener('resize', self.directionAware.bind(self));
         window.addEventListener('scroll', self.directionAware.bind(self));
-        this.volumeBtn.addEventListener('click', this.showhideVolume.bind(self));
 
         for (let i = 0; i < this.sliders.length; i++) {
             const pin = this.sliders[i].querySelector('.pin');
@@ -291,16 +328,19 @@ class GreenAudioPlayer {
     }
 
     rewind(event) {
-        if (this.inRange(event)) {
-            this.player.currentTime = this.player.duration * this.getCoefficient(event);
+        if (this.player.seekable && this.player.seekable.length) { // no seek if not (pre)loaded
+            if (this.inRange(event)) {
+                this.player.currentTime = this.player.duration * this.getCoefficient(event);
+            }
         }
     }
 
     showVolume() {
-        if (this.volumeBtn.getAttribute('aria-label') === 'Close') {
+        if (this.volumeBtn.getAttribute('aria-attribute') === 'Open') {
             this.volumeControls.classList.remove('hidden');
             this.volumeBtn.classList.add('open');
-            this.volumeBtn.setAttribute('aria-label', 'Open');
+            this.volumeBtn.setAttribute('aria-label', 'Close');
+            this.hasSetAttribute(this.volumeBtn, 'title', 'Close');
         }
     }
 
@@ -309,10 +349,12 @@ class GreenAudioPlayer {
 
         if (this.volumeBtn.getAttribute('aria-label') === 'Open') {
             this.volumeBtn.setAttribute('aria-label', 'Close');
-            this.volumeBtn.classList.remove('open');
+            this.hasSetAttribute(this.volumeBtn, 'title', 'Close');
+            this.volumeBtn.classList.add('open');
         } else {
             this.volumeBtn.setAttribute('aria-label', 'Open');
-            this.volumeBtn.classList.add('open');
+            this.hasSetAttribute(this.volumeBtn, 'title', 'Open');
+            this.volumeBtn.classList.remove('open');
         }
     }
 
@@ -329,15 +371,32 @@ class GreenAudioPlayer {
     }
 
     togglePlay() {
+        const self = this;
+        if (!this.player.seekable) { // disable play if not (pre)loaded
+            this.player.load();
+            this.player.onloadstart = () => {
+                self.loading.style.display = 'block';
+            };
+        }
         if (this.player.paused) {
             if (this.stopOthersOnPlay) {
                 GreenAudioPlayer.stopOtherPlayers();
             }
             GreenAudioPlayer.playPlayer(this.player);
             this.playPauseBtn.setAttribute('aria-label', 'Pause');
+            this.hasSetAttribute(this.playPauseBtn, 'title', 'Pause');
         } else {
             GreenAudioPlayer.pausePlayer(this.player, 'toggle');
             this.playPauseBtn.setAttribute('aria-label', 'Play');
+            this.hasSetAttribute(this.playPauseBtn, 'title', 'Play');
+        }
+    }
+
+    hasSetAttribute(el, a, v) {
+        if (this.showTooltips) {
+            if (el.hasAttribute(a)) {
+                el.setAttribute(a, v);
+            }
         }
     }
 
@@ -368,40 +427,61 @@ class GreenAudioPlayer {
     }
 
     pressKb(event) {
+        const self = this;
         const evt = event || window.event;
         if (this.enableKeystrokes) {
             switch (evt.keyCode) {
-            case 13: case 32: if (document.activeElement.parentNode === this.playPauseBtn) {
-                this.togglePlay();
-            } else if (document.activeElement.parentNode === this.volumeBtn
-                || document.activeElement === this.sliders[1]) {
-                if (document.activeElement === this.sliders[1]) {
-                    try { // IE 11 not allowing programmatic focus on svg elements
-                        this.volumeBtn.children[0].focus();
-                    } catch (error) {
-                        this.volumeBtn.focus();
+            case 13: // Enter
+            case 32: // Spacebar
+                if (document.activeElement.parentNode === this.playPauseBtn) {
+                    this.togglePlay();
+                } else if (document.activeElement.parentNode === this.volumeBtn
+                    || document.activeElement === this.sliders[1]) {
+                    if (document.activeElement === this.sliders[1]) {
+                        try { // IE 11 not allowing programmatic focus on svg elements
+                            this.volumeBtn.children[0].focus();
+                        } catch (error) {
+                            this.volumeBtn.focus();
+                        }
+                    }
+                    this.showhideVolume();
+                }
+                if (evt.keyCode === 13 && this.showDownload
+                    && document.activeElement.parentNode === this.downloadLink) {
+                    this.downloadLink.focus();
+                }
+                break;
+            case 37: case 39:
+                if (document.activeElement === this.sliders[0]) {
+                    if (evt.keyCode === 37) {
+                        this.setCurrentTime(-5);
+                    } else {
+                        this.setCurrentTime(+5);
+                    }
+                    if (this.player.paused === false) {
+                        if (this.player.seeking === true) {
+                            this.togglePlay();
+                            window.addEventListener('keyup', () => {
+                                if (self.player.paused === true) {
+                                    self.togglePlay();
+                                }
+                            }, false);
+                        }
                     }
                 }
-                this.showhideVolume();
-            }
                 break;
-            case 37: if (document.activeElement === this.sliders[0]) {
-                this.setCurrentTime(-5);
-            }
-                break;
-            case 39: if (document.activeElement === this.sliders[0]) {
-                this.setCurrentTime(+5);
-            }
-                break;
-            case 38: if (document.activeElement.parentNode === this.volumeBtn
-                || document.activeElement === this.sliders[1]) {
-                this.showVolume(); this.setVolume(0.05);
-            }
-                break;
-            case 40: if (document.activeElement.parentNode === this.volumeBtn
-                || document.activeElement === this.sliders[1]) {
-                this.showVolume(); this.setVolume(-0.05);
-            }
+            case 38: case 40:
+                if (document.activeElement.parentNode === this.volumeBtn
+                    || document.activeElement === this.sliders[1]) {
+                    if (evt.keyCode === 38) {
+                        this.setVolume(0.05);
+                    } else {
+                        this.setVolume(-0.05);
+                    }
+                }
+                if (document.activeElement.parentNode === this.volumeBtn) {
+                    this.showVolume();
+                }
                 break;
             default: break;
             }
