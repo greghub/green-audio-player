@@ -23,8 +23,7 @@
 		.volume__button,
 		.volume__controls,
 		.download {
-			&:hover,
-			&:focus {
+			&:hover {
 				outline: dotted 1px $gray;
 			}
 		}
