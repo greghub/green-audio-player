@@ -27,8 +27,6 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 var GreenAudioPlayer = /*#__PURE__*/function () {
   function GreenAudioPlayer(player, options) {
-    var _this = this;
-
     _classCallCheck(this, GreenAudioPlayer);
 
     this.audioPlayer = typeof player === 'string' ? document.querySelector(player) : player;
@@ -58,6 +56,7 @@ var GreenAudioPlayer = /*#__PURE__*/function () {
     this.stopOthersOnPlay = opts.stopOthersOnPlay || false;
     this.enableKeystrokes = opts.enableKeystrokes || false;
     this.showTooltips = opts.showTooltips || false;
+    var self = this;
     this.labels = {
       volume: {
         open: 'Open Volume Controls',
@@ -73,21 +72,19 @@ var GreenAudioPlayer = /*#__PURE__*/function () {
         this.span[i].outerHTML = '';
       }
     } else {
-      var self = this;
       window.addEventListener('keydown', this.pressKb.bind(self), false);
       this.sliders[0].setAttribute('tabindex', 0);
       this.sliders[1].setAttribute('tabindex', 0);
       this.download.setAttribute('tabindex', -1);
       this.downloadLink.setAttribute('tabindex', -1);
 
-      for (var _i = 0; _i < this.svg.length; _i++) {
-        this.svg[_i].setAttribute('tabindex', 0);
-
-        this.svg[_i].setAttribute('focusable', true);
+      for (var j = 0; j < this.svg.length; j++) {
+        this.svg[j].setAttribute('tabindex', 0);
+        this.svg[j].setAttribute('focusable', true);
       }
 
-      for (var _i2 = 0; _i2 < this.img.length; _i2++) {
-        this.img[_i2].setAttribute('tabindex', 0);
+      for (var k = 0; k < this.img.length; k++) {
+        this.img[k].setAttribute('tabindex', 0);
       }
     }
 
@@ -95,6 +92,10 @@ var GreenAudioPlayer = /*#__PURE__*/function () {
       this.playPauseBtn.setAttribute('title', this.labels.play);
       this.volumeBtn.setAttribute('title', this.labels.volume.open);
       this.downloadLink.setAttribute('title', this.labels.download);
+    }
+
+    if (opts.outlineControls || false) {
+      this.audioPlayer.classList.add('player-accessible');
     }
 
     if (opts.showDownloadButton || false) {
@@ -106,22 +107,17 @@ var GreenAudioPlayer = /*#__PURE__*/function () {
     this.overcomeIosLimitations();
 
     if ('autoplay' in this.player.attributes) {
-      var _self = this;
-
       var promise = this.player.play();
 
       if (promise !== undefined) {
         promise.then(function () {
-          var playPauseButton = _self.player.parentElement.querySelector('.play-pause-btn__icon');
-
+          var playPauseButton = self.player.parentElement.querySelector('.play-pause-btn__icon');
           playPauseButton.attributes.d.value = 'M0 0h6v24H0zM12 0h6v24h-6z';
-
-          _self.playPauseBtn.setAttribute('aria-label', _this.labels.pause);
-
-          _self.hasSetAttribute(_self.playPauseBtn, 'title', _this.labels.pause);
+          self.playPauseBtn.setAttribute('aria-label', self.labels.pause);
+          self.hasSetAttribute(self.playPauseBtn, 'title', self.labels.pause);
         }).catch(function () {
           // eslint-disable-next-line no-console
-          console.error('Green Audio Player Error: Autoplay has been prevented, because it is not allowed by this browser');
+          console.error('Green Audio Player Error: Autoplay has been prevented, because it is not allowed by this browser.');
         });
       }
     }
@@ -135,8 +131,6 @@ var GreenAudioPlayer = /*#__PURE__*/function () {
   _createClass(GreenAudioPlayer, [{
     key: "initEvents",
     value: function initEvents() {
-      var _this2 = this;
-
       var self = this;
       self.audioPlayer.addEventListener('mousedown', function (event) {
         if (self.isDraggable(event.target)) {
@@ -199,8 +193,8 @@ var GreenAudioPlayer = /*#__PURE__*/function () {
       this.player.addEventListener('ended', function () {
         GreenAudioPlayer.pausePlayer(self.player, 'ended');
         self.player.currentTime = 0;
-        self.playPauseBtn.setAttribute('aria-label', _this2.labels.play);
-        self.hasSetAttribute(self.playPauseBtn, 'title', _this2.labels.play);
+        self.playPauseBtn.setAttribute('aria-label', self.labels.play);
+        self.hasSetAttribute(self.playPauseBtn, 'title', self.labels.play);
       });
       this.volumeBtn.addEventListener('click', this.showHideVolume.bind(self));
       window.addEventListener('resize', self.directionAware.bind(self));
@@ -447,75 +441,75 @@ var GreenAudioPlayer = /*#__PURE__*/function () {
       var self = this;
       var evt = event || window.event;
 
-      if (this.enableKeystrokes) {
-        switch (evt.keyCode) {
-          case 13: // Enter
+      switch (evt.keyCode) {
+        case 13: // Enter
 
-          case 32:
-            // Spacebar
-            if (document.activeElement.parentNode === this.playPauseBtn) {
+        case 32:
+          // Spacebar
+          if (document.activeElement.parentNode === this.playPauseBtn) {
+            this.togglePlay();
+          } else if (document.activeElement.parentNode === this.volumeBtn || document.activeElement === this.sliders[1]) {
+            if (document.activeElement === this.sliders[1]) {
+              try {
+                // IE 11 not supporting programmatic focus on svg elements
+                this.volumeBtn.children[0].focus();
+              } catch (error) {
+                this.volumeBtn.focus();
+              }
+            }
+
+            this.showHideVolume();
+          }
+
+          if (evt.keyCode === 13 && this.showDownload && document.activeElement.parentNode === this.downloadLink) {
+            this.downloadLink.focus();
+          }
+
+          break;
+
+        case 37:
+        case 39:
+          // horizontal Arrows
+          if (document.activeElement === this.sliders[0]) {
+            if (evt.keyCode === 37) {
+              this.setCurrentTime(-5);
+            } else {
+              this.setCurrentTime(+5);
+            }
+
+            if (!this.player.paused && this.player.seeking) {
               this.togglePlay();
-            } else if (document.activeElement.parentNode === this.volumeBtn || document.activeElement === this.sliders[1]) {
-              if (document.activeElement === this.sliders[1]) {
-                try {
-                  // IE 11 not allowing programmatic focus on svg elements
-                  this.volumeBtn.children[0].focus();
-                } catch (error) {
-                  this.volumeBtn.focus();
+              self.seeking = true;
+              window.addEventListener('keyup', function () {
+                if (self.seeking) {
+                  self.togglePlay();
+                  self.seeking = self.player.seeking;
                 }
-              }
-
-              this.showHideVolume();
+              }, false);
             }
+          }
 
-            if (evt.keyCode === 13 && this.showDownload && document.activeElement.parentNode === this.downloadLink) {
-              this.downloadLink.focus();
+          break;
+
+        case 38:
+        case 40:
+          // vertical Arrows
+          if (document.activeElement.parentNode === this.volumeBtn || document.activeElement === this.sliders[1]) {
+            if (evt.keyCode === 38) {
+              this.setVolume(0.05);
+            } else {
+              this.setVolume(-0.05);
             }
+          }
 
-            break;
+          if (document.activeElement.parentNode === this.volumeBtn) {
+            this.showVolume();
+          }
 
-          case 37:
-          case 39:
-            if (document.activeElement === this.sliders[0]) {
-              if (evt.keyCode === 37) {
-                this.setCurrentTime(-5);
-              } else {
-                this.setCurrentTime(+5);
-              }
+          break;
 
-              if (this.player.paused === false) {
-                if (this.player.seeking === true) {
-                  this.togglePlay();
-                  window.addEventListener('keyup', function () {
-                    if (self.player.paused === true) {
-                      self.togglePlay();
-                    }
-                  }, false);
-                }
-              }
-            }
-
-            break;
-
-          case 38:
-          case 40:
-            if (document.activeElement.parentNode === this.volumeBtn || document.activeElement === this.sliders[1]) {
-              if (evt.keyCode === 38) {
-                this.setVolume(0.05);
-              } else {
-                this.setVolume(-0.05);
-              }
-            }
-
-            if (document.activeElement.parentNode === this.volumeBtn) {
-              this.showVolume();
-            }
-
-            break;
-
-          default:
-            break;
-        }
+        default:
+          break;
       }
     }
   }, {
