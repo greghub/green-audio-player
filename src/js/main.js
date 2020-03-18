@@ -29,6 +29,7 @@ class GreenAudioPlayer {
         this.stopOthersOnPlay = opts.stopOthersOnPlay || false;
         this.enableKeystrokes = opts.enableKeystrokes || false;
         this.showTooltips = opts.showTooltips || false;
+        this.showBufferingIcon = opts.showBufferingIcon || false;
 
         const self = this;
 
@@ -217,6 +218,10 @@ class GreenAudioPlayer {
         this.player.addEventListener('loadedmetadata', () => {
             self.totalTime.textContent = GreenAudioPlayer.formatTime(self.player.duration);
         });
+        if (this.showBufferingIcon) {
+            this.player.addEventListener('waiting', this.showLoadingIndicator.bind(self));
+            this.player.addEventListener('playing', this.hideLoadingIndicator.bind(self));
+        }
         this.player.addEventListener('seeking', this.showLoadingIndicator.bind(self));
         this.player.addEventListener('seeked', this.hideLoadingIndicator.bind(self));
         this.player.addEventListener('canplay', this.hideLoadingIndicator.bind(self));
@@ -387,14 +392,32 @@ class GreenAudioPlayer {
         return `${(min < 10) ? `0${min}` : min}:${(sec < 10) ? `0${sec}` : sec}`;
     }
 
-    togglePlay() {
+    preloadNone() {
         const self = this;
-        if (!this.player.seekable) { // disable play if not (pre)loaded
-            this.player.load();
-            this.player.onloadstart = () => {
-                self.loading.style.display = 'block';
+        if (!this.player.duration) { // load, then play, prevent streaming
+            self.playPauseBtn.style.visibility = 'hidden';
+            self.loading.style.visibility = 'visible';
+            this.loaded = false;
+            this.player.ondurationchange = () => {
+                const promise = self.player.play();
+                if (promise !== undefined) {
+                    promise.then(() => {
+                        if (!self.loaded) {
+                            self.player.pause();
+                            self.player.play();
+                            self.loaded = true;
+                        }
+                    }).catch(() => { /* nothing wrong */ });
+                } else { // browsers that don't support promise
+                    self.player.pause();
+                    self.player.play();
+                }
             };
         }
+    }
+
+    togglePlay() {
+        this.preloadNone();
         if (this.player.paused) {
             if (this.stopOthersOnPlay) {
                 GreenAudioPlayer.stopOtherPlayers();

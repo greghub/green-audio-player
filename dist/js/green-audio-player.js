@@ -56,6 +56,7 @@ var GreenAudioPlayer = /*#__PURE__*/function () {
     this.stopOthersOnPlay = opts.stopOthersOnPlay || false;
     this.enableKeystrokes = opts.enableKeystrokes || false;
     this.showTooltips = opts.showTooltips || false;
+    this.showBufferingIcon = opts.showBufferingIcon || false;
     var self = this;
     this.labels = {
       volume: {
@@ -187,6 +188,12 @@ var GreenAudioPlayer = /*#__PURE__*/function () {
       this.player.addEventListener('loadedmetadata', function () {
         self.totalTime.textContent = GreenAudioPlayer.formatTime(self.player.duration);
       });
+
+      if (this.showBufferingIcon) {
+        this.player.addEventListener('waiting', this.showLoadingIndicator.bind(self));
+        this.player.addEventListener('playing', this.hideLoadingIndicator.bind(self));
+      }
+
       this.player.addEventListener('seeking', this.showLoadingIndicator.bind(self));
       this.player.addEventListener('seeked', this.hideLoadingIndicator.bind(self));
       this.player.addEventListener('canplay', this.hideLoadingIndicator.bind(self));
@@ -369,18 +376,41 @@ var GreenAudioPlayer = /*#__PURE__*/function () {
       }
     }
   }, {
-    key: "togglePlay",
-    value: function togglePlay() {
+    key: "preloadNone",
+    value: function preloadNone() {
       var self = this;
 
-      if (!this.player.seekable) {
-        // disable play if not (pre)loaded
-        this.player.load();
+      if (!this.player.duration) {
+        // load, then play, prevent streaming
+        self.playPauseBtn.style.visibility = 'hidden';
+        self.loading.style.visibility = 'visible';
+        this.loaded = false;
 
-        this.player.onloadstart = function () {
-          self.loading.style.display = 'block';
+        this.player.ondurationchange = function () {
+          var promise = self.player.play();
+
+          if (promise !== undefined) {
+            promise.then(function () {
+              if (!self.loaded) {
+                self.player.pause();
+                self.player.play();
+                self.loaded = true;
+              }
+            }).catch(function () {
+              /* nothing wrong */
+            });
+          } else {
+            // browsers that don't support promise
+            self.player.pause();
+            self.player.play();
+          }
         };
       }
+    }
+  }, {
+    key: "togglePlay",
+    value: function togglePlay() {
+      this.preloadNone();
 
       if (this.player.paused) {
         if (this.stopOthersOnPlay) {
