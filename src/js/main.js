@@ -48,6 +48,7 @@ class GreenAudioPlayer {
             }
         } else {
             window.addEventListener('keydown', this.pressKb.bind(self), false);
+            window.addEventListener('keyup', this.unPressKb.bind(self), false);
             this.sliders[0].setAttribute('tabindex', 0);
             this.sliders[1].setAttribute('tabindex', 0);
             this.download.setAttribute('tabindex', -1);
@@ -387,14 +388,16 @@ class GreenAudioPlayer {
         return `${(min < 10) ? `0${min}` : min}:${(sec < 10) ? `0${sec}` : sec}`;
     }
 
-    togglePlay() {
+    preloadNone() {
         const self = this;
-        if (!this.player.seekable) { // disable play if not (pre)loaded
-            this.player.load();
-            this.player.onloadstart = () => {
-                self.loading.style.display = 'block';
-            };
+        if (!this.player.duration) {
+            self.playPauseBtn.style.visibility = 'hidden';
+            self.loading.style.visibility = 'visible';
         }
+    }
+
+    togglePlay() {
+        this.preloadNone();
         if (this.player.paused) {
             if (this.stopOthersOnPlay) {
                 GreenAudioPlayer.stopOtherPlayers();
@@ -443,8 +446,15 @@ class GreenAudioPlayer {
         }
     }
 
+    unPressKb(event) {
+        const evt = event || window.event;
+        if (this.seeking && (evt.keyCode === 37 || evt.keyCode === 39)) {
+            this.togglePlay();
+            this.seeking = false;
+        }
+    }
+
     pressKb(event) {
-        const self = this;
         const evt = event || window.event;
         switch (evt.keyCode) {
         case 13: // Enter
@@ -476,13 +486,7 @@ class GreenAudioPlayer {
                 }
                 if (!this.player.paused && this.player.seeking) {
                     this.togglePlay();
-                    self.seeking = true;
-                    window.addEventListener('keyup', () => {
-                        if (self.seeking) {
-                            self.togglePlay();
-                            self.seeking = self.player.seeking;
-                        }
-                    }, false);
+                    this.seeking = true;
                 }
             }
             break;
