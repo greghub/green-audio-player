@@ -19,15 +19,11 @@
   background-color: #fff;
   box-sizing: border-box;
   outline: none; }
-  .green-audio-player.player-accessible .play-pause-btn:hover, .green-audio-player.player-accessible .play-pause-btn:focus,
+  .green-audio-player.player-accessible .play-pause-btn:hover,
   .green-audio-player.player-accessible .controls:hover,
-  .green-audio-player.player-accessible .controls:focus,
   .green-audio-player.player-accessible .volume__button:hover,
-  .green-audio-player.player-accessible .volume__button:focus,
   .green-audio-player.player-accessible .volume__controls:hover,
-  .green-audio-player.player-accessible .volume__controls:focus,
-  .green-audio-player.player-accessible .download:hover,
-  .green-audio-player.player-accessible .download:focus {
+  .green-audio-player.player-accessible .download:hover {
     outline: dotted 1px #999; }
   .green-audio-player svg,
   .green-audio-player img {

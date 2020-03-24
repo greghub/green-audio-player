@@ -30,6 +30,8 @@ class GreenAudioPlayer {
         this.enableKeystrokes = opts.enableKeystrokes || false;
         this.showTooltips = opts.showTooltips || false;
 
+        const self = this;
+
         this.labels = {
             volume: {
                 open: 'Open Volume Controls',
@@ -45,18 +47,18 @@ class GreenAudioPlayer {
                 this.span[i].outerHTML = '';
             }
         } else {
-            const self = this;
             window.addEventListener('keydown', this.pressKb.bind(self), false);
+            window.addEventListener('keyup', this.unPressKb.bind(self), false);
             this.sliders[0].setAttribute('tabindex', 0);
             this.sliders[1].setAttribute('tabindex', 0);
             this.download.setAttribute('tabindex', -1);
             this.downloadLink.setAttribute('tabindex', -1);
-            for (let i = 0; i < this.svg.length; i++) {
-                this.svg[i].setAttribute('tabindex', 0);
-                this.svg[i].setAttribute('focusable', true);
+            for (let j = 0; j < this.svg.length; j++) {
+                this.svg[j].setAttribute('tabindex', 0);
+                this.svg[j].setAttribute('focusable', true);
             }
-            for (let i = 0; i < this.img.length; i++) {
-                this.img[i].setAttribute('tabindex', 0);
+            for (let k = 0; k < this.img.length; k++) {
+                this.img[k].setAttribute('tabindex', 0);
             }
         }
 
@@ -64,6 +66,10 @@ class GreenAudioPlayer {
             this.playPauseBtn.setAttribute('title', this.labels.play);
             this.volumeBtn.setAttribute('title', this.labels.volume.open);
             this.downloadLink.setAttribute('title', this.labels.download);
+        }
+
+        if (opts.outlineControls || false) {
+            this.audioPlayer.classList.add('player-accessible');
         }
 
         if (opts.showDownloadButton || false) {
@@ -75,17 +81,16 @@ class GreenAudioPlayer {
         this.overcomeIosLimitations();
 
         if ('autoplay' in this.player.attributes) {
-            const self = this;
             const promise = this.player.play();
             if (promise !== undefined) {
                 promise.then(() => {
                     const playPauseButton = self.player.parentElement.querySelector('.play-pause-btn__icon');
                     playPauseButton.attributes.d.value = 'M0 0h6v24H0zM12 0h6v24h-6z';
-                    self.playPauseBtn.setAttribute('aria-label', this.labels.pause);
-                    self.hasSetAttribute(self.playPauseBtn, 'title', this.labels.pause);
+                    self.playPauseBtn.setAttribute('aria-label', self.labels.pause);
+                    self.hasSetAttribute(self.playPauseBtn, 'title', self.labels.pause);
                 }).catch(() => {
                     // eslint-disable-next-line no-console
-                    console.error('Green Audio Player Error: Autoplay has been prevented, because it is not allowed by this browser');
+                    console.error('Green Audio Player Error: Autoplay has been prevented, because it is not allowed by this browser.');
                 });
             }
         }
@@ -219,8 +224,8 @@ class GreenAudioPlayer {
         this.player.addEventListener('ended', () => {
             GreenAudioPlayer.pausePlayer(self.player, 'ended');
             self.player.currentTime = 0;
-            self.playPauseBtn.setAttribute('aria-label', this.labels.play);
-            self.hasSetAttribute(self.playPauseBtn, 'title', this.labels.play);
+            self.playPauseBtn.setAttribute('aria-label', self.labels.play);
+            self.hasSetAttribute(self.playPauseBtn, 'title', self.labels.play);
         });
 
         this.volumeBtn.addEventListener('click', this.showHideVolume.bind(self));
@@ -383,14 +388,16 @@ class GreenAudioPlayer {
         return `${(min < 10) ? `0${min}` : min}:${(sec < 10) ? `0${sec}` : sec}`;
     }
 
-    togglePlay() {
+    preloadNone() {
         const self = this;
-        if (!this.player.seekable) { // disable play if not (pre)loaded
-            this.player.load();
-            this.player.onloadstart = () => {
-                self.loading.style.display = 'block';
-            };
+        if (!this.player.duration) {
+            self.playPauseBtn.style.visibility = 'hidden';
+            self.loading.style.visibility = 'visible';
         }
+    }
+
+    togglePlay() {
+        this.preloadNone();
         if (this.player.paused) {
             if (this.stopOthersOnPlay) {
                 GreenAudioPlayer.stopOtherPlayers();
@@ -439,65 +446,64 @@ class GreenAudioPlayer {
         }
     }
 
-    pressKb(event) {
-        const self = this;
+    unPressKb(event) {
         const evt = event || window.event;
-        if (this.enableKeystrokes) {
-            switch (evt.keyCode) {
-            case 13: // Enter
-            case 32: // Spacebar
-                if (document.activeElement.parentNode === this.playPauseBtn) {
-                    this.togglePlay();
-                } else if (document.activeElement.parentNode === this.volumeBtn
-                    || document.activeElement === this.sliders[1]) {
-                    if (document.activeElement === this.sliders[1]) {
-                        try { // IE 11 not allowing programmatic focus on svg elements
-                            this.volumeBtn.children[0].focus();
-                        } catch (error) {
-                            this.volumeBtn.focus();
-                        }
-                    }
-                    this.showHideVolume();
-                }
-                if (evt.keyCode === 13 && this.showDownload
-                    && document.activeElement.parentNode === this.downloadLink) {
-                    this.downloadLink.focus();
-                }
-                break;
-            case 37: case 39:
-                if (document.activeElement === this.sliders[0]) {
-                    if (evt.keyCode === 37) {
-                        this.setCurrentTime(-5);
-                    } else {
-                        this.setCurrentTime(+5);
-                    }
-                    if (this.player.paused === false) {
-                        if (this.player.seeking === true) {
-                            this.togglePlay();
-                            window.addEventListener('keyup', () => {
-                                if (self.player.paused === true) {
-                                    self.togglePlay();
-                                }
-                            }, false);
-                        }
+        if (this.seeking && (evt.keyCode === 37 || evt.keyCode === 39)) {
+            this.togglePlay();
+            this.seeking = false;
+        }
+    }
+
+    pressKb(event) {
+        const evt = event || window.event;
+        switch (evt.keyCode) {
+        case 13: // Enter
+        case 32: // Spacebar
+            if (document.activeElement.parentNode === this.playPauseBtn) {
+                this.togglePlay();
+            } else if (document.activeElement.parentNode === this.volumeBtn
+                || document.activeElement === this.sliders[1]) {
+                if (document.activeElement === this.sliders[1]) {
+                    try { // IE 11 not supporting programmatic focus on svg elements
+                        this.volumeBtn.children[0].focus();
+                    } catch (error) {
+                        this.volumeBtn.focus();
                     }
                 }
-                break;
-            case 38: case 40:
-                if (document.activeElement.parentNode === this.volumeBtn
-                    || document.activeElement === this.sliders[1]) {
-                    if (evt.keyCode === 38) {
-                        this.setVolume(0.05);
-                    } else {
-                        this.setVolume(-0.05);
-                    }
-                }
-                if (document.activeElement.parentNode === this.volumeBtn) {
-                    this.showVolume();
-                }
-                break;
-            default: break;
+                this.showHideVolume();
             }
+            if (evt.keyCode === 13 && this.showDownload
+                && document.activeElement.parentNode === this.downloadLink) {
+                this.downloadLink.focus();
+            }
+            break;
+        case 37: case 39: // horizontal Arrows
+            if (document.activeElement === this.sliders[0]) {
+                if (evt.keyCode === 37) {
+                    this.setCurrentTime(-5);
+                } else {
+                    this.setCurrentTime(+5);
+                }
+                if (!this.player.paused && this.player.seeking) {
+                    this.togglePlay();
+                    this.seeking = true;
+                }
+            }
+            break;
+        case 38: case 40: // vertical Arrows
+            if (document.activeElement.parentNode === this.volumeBtn
+                || document.activeElement === this.sliders[1]) {
+                if (evt.keyCode === 38) {
+                    this.setVolume(0.05);
+                } else {
+                    this.setVolume(-0.05);
+                }
+            }
+            if (document.activeElement.parentNode === this.volumeBtn) {
+                this.showVolume();
+            }
+            break;
+        default: break;
         }
     }
 
