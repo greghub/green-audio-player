@@ -212,14 +212,27 @@ var GreenAudioPlayer = /*#__PURE__*/function () {
     key: "overcomeIosLimitations",
     value: function overcomeIosLimitations() {
       var self = this;
+      
+      function isiOS() {
+        return [
+              'iPad Simulator',
+              'iPhone Simulator',
+              'iPod Simulator',
+              'iPad',
+              'iPhone',
+              'iPod'
+            ].includes(navigator.platform)
+            // iPad on iOS 13 detection
+            || (navigator.userAgent.includes("Mac") && "ontouchend" in document)
+      }
 
-      if (this.isDevice) {
+      if (isiOS()) {
         // iOS does not support "canplay" event
         this.player.addEventListener('loadedmetadata', this.hideLoadingIndicator.bind(self)); // iOS does not let "volume" property to be set programmatically
-
         this.audioPlayer.querySelector('.volume').style.display = 'none';
         this.audioPlayer.querySelector('.controls').style.marginRight = '0';
       }
+      
     }
   }, {
     key: "isDraggable",
