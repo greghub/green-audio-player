@@ -524,6 +524,12 @@ class GreenAudioPlayer {
 
         for (let i = 0; i < players.length; i++) {
             GreenAudioPlayer.pausePlayer(players[i]);
+            const holderDiv = players[i].parentElement.querySelector('.holder');
+            const playPauseBtn = holderDiv.querySelector('.play-pause-btn');
+            playPauseBtn.setAttribute('aria-label', 'Play');
+            if (playPauseBtn.attributes.title) {
+                playPauseBtn.setAttribute('title', 'Play');
+            }
         }
     }
 
