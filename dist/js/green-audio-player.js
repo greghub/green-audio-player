@@ -34,7 +34,7 @@ var GreenAudioPlayer = /*#__PURE__*/function () {
     var audioElement = this.audioPlayer.innerHTML;
     this.audioPlayer.classList.add('green-audio-player');
     this.audioPlayer.innerHTML = GreenAudioPlayer.getTemplate() + audioElement;
-    this.isDevice = /ipad|iphone|ipod|android/i.test(window.navigator.userAgent.toLowerCase()) && !window.MSStream;
+    this.isDevice = (/ipad|iphone|ipod|android/i.test(window.navigator.userAgent.toLowerCase()) || window.navigator.platform === 'MacIntel' && window.navigator.maxTouchPoints > 1) && !window.MSStream;
     this.playPauseBtn = this.audioPlayer.querySelector('.play-pause-btn');
     this.loading = this.audioPlayer.querySelector('.loading');
     this.sliders = this.audioPlayer.querySelectorAll('.slider');
@@ -597,6 +597,13 @@ var GreenAudioPlayer = /*#__PURE__*/function () {
 
       for (var i = 0; i < players.length; i++) {
         GreenAudioPlayer.pausePlayer(players[i]);
+        var holderDiv = players[i].parentElement.querySelector('.holder');
+        var playPauseBtn = holderDiv.querySelector('.play-pause-btn');
+        playPauseBtn.setAttribute('aria-label', 'Play');
+
+        if (playPauseBtn.attributes.title) {
+          playPauseBtn.setAttribute('title', 'Play');
+        }
       }
     }
   }]);
