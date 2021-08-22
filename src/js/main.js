@@ -239,6 +239,8 @@ class GreenAudioPlayer {
         }
 
         this.downloadLink.addEventListener('click', this.downloadAudio.bind(self));
+        this.downloadLink.addEventListener('mouseover', this.downloadAudio.bind(self));
+        this.downloadLink.addEventListener('contextmenu', this.downloadAudio.bind(self));
     }
 
     overcomeIosLimitations() {

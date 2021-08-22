@@ -37,12 +37,12 @@
             <source src="audio/example-2.mp3" type="audio/mpeg">
         </audio>
     </div>
-    <div class="ready-player-3 player-with-download">
+    <div class="ready-player-3 player-download">
         <audio crossorigin>
             <source src="audio/example-2.mp3" type="audio/mpeg">
         </audio>
     </div>
-    <div class="ready-player-4 player-with-accessibility">
+    <div class="ready-player-4 player-accessible">
         <audio crossorigin>
             <source src="audio/example-2.mp3" type="audio/mpeg">
         </audio>
@@ -57,14 +57,14 @@
             });
 
             GreenAudioPlayer.init({
-                selector: '.player-with-download',
+                selector: '.player-download',
                 stopOthersOnPlay: true,
                 showDownloadButton: true,
                 enableKeystrokes: true
             });
 
             GreenAudioPlayer.init({
-                selector: '.player-with-accessibility',
+                selector: '.player-accessible',
                 stopOthersOnPlay: true,
                 enableKeystrokes: true
             });
