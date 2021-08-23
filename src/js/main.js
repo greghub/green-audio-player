@@ -6,9 +6,13 @@ class GreenAudioPlayer {
         const audioElement = this.audioPlayer.innerHTML;
         this.audioPlayer.classList.add('green-audio-player');
         this.audioPlayer.innerHTML = GreenAudioPlayer.getTemplate() + audioElement;
-
-        this.isDevice = (/ipad|iphone|ipod|android/i.test(window.navigator.userAgent.toLowerCase())
-        || (window.navigator.platform === 'MacIntel' && window.navigator.maxTouchPoints > 1)) && !window.MSStream;
+        const uaDataIsMobile = window.navigator.userAgentData
+        && window.navigator.userAgentData.mobile;
+        this.isDevice = typeof uaDataIsMobile === 'boolean'
+            ? uaDataIsMobile
+            : (/ipad|iphone|ipod|android/i.test(window.navigator.userAgent.toLowerCase())
+            || (window.navigator.platform === 'MacIntel' && window.navigator.maxTouchPoints > 1))
+            && !window.MSStream;
         this.playPauseBtn = this.audioPlayer.querySelector('.play-pause-btn');
         this.loading = this.audioPlayer.querySelector('.loading');
         this.sliders = this.audioPlayer.querySelectorAll('.slider');
@@ -102,9 +106,9 @@ class GreenAudioPlayer {
     }
 
     static init(options) {
+        /* use prototype constructor compatible with IE foreach */
         const players = document.querySelectorAll(options.selector);
-
-        players.forEach((player) => {
+        Array.prototype.slice.call(players).forEach((player) => {
             /* eslint-disable no-new */
             new GreenAudioPlayer(player, options);
         });
