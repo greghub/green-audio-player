@@ -80,6 +80,11 @@ class GreenAudioPlayer {
         this.directionAware();
         this.overcomeIosLimitations();
 
+        if('data-duration' in this.player.attributes)
+        {
+          self.totalTime.textContent = GreenAudioPlayer.formatTime(this.player.getAttribute("data-duration"));
+        }
+
         if ('autoplay' in this.player.attributes) {
             const promise = this.player.play();
             if (promise !== undefined) {
