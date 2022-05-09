@@ -34,8 +34,18 @@ var GreenAudioPlayer = /*#__PURE__*/function () {
     var audioElement = this.audioPlayer.innerHTML;
     this.audioPlayer.classList.add('green-audio-player');
     this.audioPlayer.innerHTML = GreenAudioPlayer.getTemplate() + audioElement;
+    var isTouch = window.matchMedia && window.matchMedia('(pointer:coarse)').matches; // primary pointer is touch
+
+    var isDesktopIE11 = window.MSInputMethodContext && document.documentMode && /tablet/i.test(window.navigator.userAgent.toLowerCase());
     var uaDataIsMobile = window.navigator.userAgentData && window.navigator.userAgentData.mobile;
-    this.isDevice = typeof uaDataIsMobile === 'boolean' ? uaDataIsMobile : (/ipad|iphone|ipod|android/i.test(window.navigator.userAgent.toLowerCase()) || window.navigator.platform === 'MacIntel' && window.navigator.maxTouchPoints > 1) && !window.MSStream;
+    this.isSafari = typeof uaDataIsMobile === 'boolean' // browser supports "Client Hints"
+    ? window.navigator.userAgentData.brands[1] && window.navigator.userAgentData.brands[1].brand.indexOf('Safari') // check if Safari brand exists
+    : /^((?!chrom|android|kindle|crios|fxios).)*version.+safari/i.test(window.navigator.userAgent.toLowerCase());
+    this.isDevice = typeof uaDataIsMobile === 'boolean' // browser supports "Client Hints"
+    ? window.navigator.userAgentData.mobile || isTouch // all mobiles and tablets
+    : isTouch || !isDesktopIE11 // IE desktop's User Agent string claims to be "Tablet"
+    && /android|iphone|ipod|ipad|tablet/i.test(window.navigator.userAgent.toLowerCase()); // test User Agents here
+
     this.playPauseBtn = this.audioPlayer.querySelector('.play-pause-btn');
     this.loading = this.audioPlayer.querySelector('.loading');
     this.sliders = this.audioPlayer.querySelectorAll('.slider');
@@ -106,7 +116,12 @@ var GreenAudioPlayer = /*#__PURE__*/function () {
 
     this.initEvents();
     this.directionAware();
-    this.overcomeIosLimitations();
+    this.overcomeAppleLimitations();
+    this.disableVolumeControls(); // mouseless devices
+
+    if ('data-duration' in this.player.attributes) {
+      self.totalTime.textContent = GreenAudioPlayer.formatTime(this.player.getAttribute('data-duration'));
+    }
 
     if ('autoplay' in this.player.attributes) {
       var promise = this.player.play();
@@ -181,6 +196,15 @@ var GreenAudioPlayer = /*#__PURE__*/function () {
           }, false);
           event.preventDefault();
         }
+      }, {
+        passive: true
+      });
+      window.addEventListener('visibilitychange', function () {
+        if (!document.hidden && self.player.paused === true && self.player.duration >= 0) {
+          GreenAudioPlayer.pausePlayer(self.player, 'toggle');
+          self.playPauseBtn.setAttribute('aria-label', self.labels.play);
+          self.hasSetAttribute(self.playPauseBtn, 'title', self.labels.play);
+        }
       });
       this.playPauseBtn.addEventListener('click', this.togglePlay.bind(self));
       this.player.addEventListener('timeupdate', this.updateProgress.bind(self));
@@ -212,14 +236,21 @@ var GreenAudioPlayer = /*#__PURE__*/function () {
       this.downloadLink.addEventListener('contextmenu', this.downloadAudio.bind(self));
     }
   }, {
-    key: "overcomeIosLimitations",
-    value: function overcomeIosLimitations() {
+    key: "overcomeAppleLimitations",
+    value: function overcomeAppleLimitations() {
       var self = this;
 
+      if (this.isSafari) {
+        // MacOS and iOS Safari do not support "canplay" event
+        this.player.addEventListener('loadedmetadata', this.hideLoadingIndicator.bind(self));
+      }
+    }
+  }, {
+    key: "disableVolumeControls",
+    value: function disableVolumeControls() {
       if (this.isDevice) {
-        // iOS does not support "canplay" event
-        this.player.addEventListener('loadedmetadata', this.hideLoadingIndicator.bind(self)); // iOS does not let "volume" property to be set programmatically
-
+        // you need a mouse for dragging the slider
+        // iOS also does not allow "volume" property to be set programmatically
         this.audioPlayer.querySelector('.volume').style.display = 'none';
         this.audioPlayer.querySelector('.controls').style.marginRight = '0';
       }
