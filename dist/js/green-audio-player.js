@@ -39,8 +39,10 @@ var GreenAudioPlayer = /*#__PURE__*/function () {
     var isDesktopIE11 = window.MSInputMethodContext && document.documentMode && /tablet/i.test(window.navigator.userAgent.toLowerCase());
     var uaDataIsMobile = window.navigator.userAgentData && window.navigator.userAgentData.mobile;
     this.isSafari = typeof uaDataIsMobile === 'boolean' // browser supports "Client Hints"
-    ? window.navigator.userAgentData.brands[1] && window.navigator.userAgentData.brands[1].brand.indexOf('Safari') // check if Safari brand exists
+    ? (window.navigator.userAgentData.brands[1] && window.navigator.userAgentData.brands[1].brand.indexOf('Safari')) > -1 // check if Safari brand exists
     : /^((?!chrom|android|kindle|crios|fxios).)*version.+safari/i.test(window.navigator.userAgent.toLowerCase());
+    this.isIOSDevice = typeof uaDataIsMobile === 'boolean' // browser supports "Client Hints"
+    ? window.navigator.userAgentData.platform && /ipad|ipod|iphone|ios|macos|macintel/i.test(window.navigator.userAgentData.platform.toLowerCase()) && isTouch : isTouch && /macos|macintel/i.test(window.navigator.userAgent.toLowerCase()) || /ipad|ipod|iphone/i.test(window.navigator.userAgent.toLowerCase());
     this.isDevice = typeof uaDataIsMobile === 'boolean' // browser supports "Client Hints"
     ? window.navigator.userAgentData.mobile || isTouch // all mobiles and tablets
     : isTouch || !isDesktopIE11 // IE desktop's User Agent string claims to be "Tablet"
@@ -49,6 +51,7 @@ var GreenAudioPlayer = /*#__PURE__*/function () {
     this.playPauseBtn = this.audioPlayer.querySelector('.play-pause-btn');
     this.loading = this.audioPlayer.querySelector('.loading');
     this.sliders = this.audioPlayer.querySelectorAll('.slider');
+    this.pins = this.audioPlayer.querySelectorAll('.pin');
     this.progress = this.audioPlayer.querySelector('.controls__progress');
     this.volumeBtn = this.audioPlayer.querySelector('.volume__button');
     this.volumeControls = this.audioPlayer.querySelector('.volume__controls');
@@ -106,7 +109,7 @@ var GreenAudioPlayer = /*#__PURE__*/function () {
       this.downloadLink.setAttribute('title', this.labels.download);
     }
 
-    if (opts.outlineControls || false) {
+    if (!this.isDevice && (opts.outlineControls || false)) {
       this.audioPlayer.classList.add('player-accessible');
     }
 
@@ -149,21 +152,33 @@ var GreenAudioPlayer = /*#__PURE__*/function () {
     key: "initEvents",
     value: function initEvents() {
       var self = this;
+      self.p = 0;
       self.audioPlayer.addEventListener('mousedown', function (event) {
         if (self.isDraggable(event.target)) {
           self.currentlyDragged = event.target;
           var handleMethod = self.currentlyDragged.dataset.method;
+
+          if (handleMethod === 'rewind' && self.player.paused === false) {
+            GreenAudioPlayer.pausePlayer(self.player, 'rewind');
+            self.p = 1;
+          }
+
           var listener = self[handleMethod].bind(self);
           window.addEventListener('mousemove', listener, false);
 
-          if (self.currentlyDragged.parentElement.parentElement === self.sliders[0]) {
+          if (event.target.parentElement.parentElement === self.sliders[0]) {
             self.paused = self.player.paused;
             if (self.paused === false) self.togglePlay();
           }
 
           window.addEventListener('mouseup', function () {
-            if (self.currentlyDragged !== false && self.currentlyDragged.parentElement.parentElement === self.sliders[0] && self.paused !== self.player.paused) {
+            if (self.currentlyDragged !== false && event.target.parentElement.parentElement === self.sliders[0] && self.paused !== self.player.paused) {
               self.togglePlay();
+            }
+
+            if (self.p > 0) {
+              GreenAudioPlayer.playPlayer(self.player);
+              self.p = 0;
             }
 
             self.currentlyDragged = false;
@@ -178,27 +193,39 @@ var GreenAudioPlayer = /*#__PURE__*/function () {
 
           self.currentlyDragged = _event$targetTouches[0];
           var handleMethod = self.currentlyDragged.target.dataset.method;
+
+          if (handleMethod === 'rewind' && self.player.paused === false) {
+            GreenAudioPlayer.pausePlayer(self.player, 'rewind');
+            self.p = 1;
+          }
+
           var listener = self[handleMethod].bind(self);
           window.addEventListener('touchmove', listener, false);
 
-          if (self.currentlyDragged.parentElement.parentElement === self.sliders[0]) {
+          if (event.target.parentElement.parentElement === self.sliders[0]) {
             self.paused = self.player.paused;
             if (self.paused === false) self.togglePlay();
           }
 
           window.addEventListener('touchend', function () {
-            if (self.currentlyDragged !== false && self.currentlyDragged.parentElement.parentElement === self.sliders[0] && self.paused !== self.player.paused) {
+            if (event.target.parentElement.parentElement === self.sliders[0] && self.paused !== self.player.paused) {
               self.togglePlay();
+            }
+
+            if (self.enableSeekPause && self.p > 0) {
+              GreenAudioPlayer.playPlayer(self.player);
+              self.p = 0;
             }
 
             self.currentlyDragged = false;
             window.removeEventListener('touchmove', listener, false);
           }, false);
-          event.preventDefault();
+          if (event.cancelable) event.preventDefault(); // prevents scroll from interfering
         }
       }, {
-        passive: true
-      });
+        passive: false
+      }); // passive "true" makes touch more responsive, sometimes bad
+
       window.addEventListener('visibilitychange', function () {
         if (!document.hidden && self.player.paused === true && self.player.duration >= 0) {
           GreenAudioPlayer.pausePlayer(self.player, 'toggle');
@@ -248,9 +275,8 @@ var GreenAudioPlayer = /*#__PURE__*/function () {
   }, {
     key: "disableVolumeControls",
     value: function disableVolumeControls() {
-      if (this.isDevice) {
-        // you need a mouse for dragging the slider
-        // iOS also does not allow "volume" property to be set programmatically
+      if (this.isiOSDevice) {
+        // iOS does not allow "volume" property to be set programmatically
         this.audioPlayer.querySelector('.volume').style.display = 'none';
         this.audioPlayer.querySelector('.controls').style.marginRight = '0';
       }
@@ -410,6 +436,9 @@ var GreenAudioPlayer = /*#__PURE__*/function () {
 
       if (!this.player.duration) {
         self.playPauseBtn.style.visibility = 'hidden';
+        self.playPauseBtn.style.pointerEvents = 'none';
+        self.pins[0].style.pointerEvents = 'none';
+        self.sliders[0].style.pointerEvents = 'none';
         self.loading.style.visibility = 'visible';
       }
     }
@@ -460,7 +489,7 @@ var GreenAudioPlayer = /*#__PURE__*/function () {
   }, {
     key: "setVolume",
     value: function setVolume(volume) {
-      if (this.isDevice) return;
+      if (this.isiOSDevice) return;
       var vol = this.player.volume;
 
       if (vol + volume >= 0 && vol + volume < 1) {
@@ -555,12 +584,16 @@ var GreenAudioPlayer = /*#__PURE__*/function () {
     key: "showLoadingIndicator",
     value: function showLoadingIndicator() {
       this.playPauseBtn.style.visibility = 'hidden';
+      this.playPauseBtn.style.pointerEvents = 'none';
       this.loading.style.visibility = 'visible';
     }
   }, {
     key: "hideLoadingIndicator",
     value: function hideLoadingIndicator() {
       this.playPauseBtn.style.visibility = 'visible';
+      this.playPauseBtn.style.pointerEvents = 'auto';
+      this.pins[0].style.pointerEvents = 'auto';
+      this.sliders[0].style.pointerEvents = 'auto';
       this.loading.style.visibility = 'hidden';
     }
   }, {
