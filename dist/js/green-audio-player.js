@@ -212,7 +212,7 @@ var GreenAudioPlayer = /*#__PURE__*/function () {
               self.togglePlay();
             }
 
-            if (self.enableSeekPause && self.p > 0) {
+            if (self.p > 0) {
               GreenAudioPlayer.playPlayer(self.player);
               self.p = 0;
             }

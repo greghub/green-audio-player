@@ -243,7 +243,7 @@ class GreenAudioPlayer {
                         && self.paused !== self.player.paused) {
                         self.togglePlay();
                     }
-                    if (self.enableSeekPause && self.p > 0) {
+                    if (self.p > 0) {
                         GreenAudioPlayer.playPlayer(self.player);
                         self.p = 0;
                     }
