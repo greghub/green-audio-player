@@ -166,17 +166,13 @@ var GreenAudioPlayer = /*#__PURE__*/function () {
           var listener = self[handleMethod].bind(self);
           window.addEventListener('mousemove', listener, false);
 
-          if (event.target.parentElement.parentElement === self.sliders[0]) {
+          if (handleMethod === 'rewind') {
             self.paused = self.player.paused;
             if (self.paused === false) self.togglePlay();
           }
 
           window.addEventListener('mouseup', function () {
-            if (self.currentlyDragged !== false && event.target.parentElement.parentElement === self.sliders[0] && self.paused !== self.player.paused) {
-              self.togglePlay();
-            }
-
-            if (self.p > 0) {
+            if (handleMethod === 'rewind' && self.p > 0) {
               GreenAudioPlayer.playPlayer(self.player);
               self.p = 0;
             }
@@ -202,17 +198,13 @@ var GreenAudioPlayer = /*#__PURE__*/function () {
           var listener = self[handleMethod].bind(self);
           window.addEventListener('touchmove', listener, false);
 
-          if (event.target.parentElement.parentElement === self.sliders[0]) {
+          if (handleMethod === 'rewind') {
             self.paused = self.player.paused;
             if (self.paused === false) self.togglePlay();
           }
 
           window.addEventListener('touchend', function () {
-            if (self.currentlyDragged !== false && event.target.parentElement.parentElement === self.sliders[0] && self.paused !== self.player.paused) {
-              self.togglePlay();
-            }
-
-            if (self.p > 0) {
+            if (handleMethod === 'rewind' && self.p > 0) {
               GreenAudioPlayer.playPlayer(self.player);
               self.p = 0;
             }
