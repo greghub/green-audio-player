@@ -238,7 +238,8 @@ class GreenAudioPlayer {
                     if (self.paused === false) self.togglePlay();
                 }
                 window.addEventListener('touchend', () => {
-                    if (event.target.parentElement.parentElement === self.sliders[0]
+                    if (self.currentlyDragged !== false
+                        && event.target.parentElement.parentElement === self.sliders[0]
                         && self.paused !== self.player.paused) {
                         self.togglePlay();
                     }

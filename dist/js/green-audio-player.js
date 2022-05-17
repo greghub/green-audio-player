@@ -208,7 +208,7 @@ var GreenAudioPlayer = /*#__PURE__*/function () {
           }
 
           window.addEventListener('touchend', function () {
-            if (event.target.parentElement.parentElement === self.sliders[0] && self.paused !== self.player.paused) {
+            if (self.currentlyDragged !== false && event.target.parentElement.parentElement === self.sliders[0] && self.paused !== self.player.paused) {
               self.togglePlay();
             }
 
