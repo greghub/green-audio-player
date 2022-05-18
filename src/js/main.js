@@ -16,7 +16,7 @@ class GreenAudioPlayer {
             ? (window.navigator.userAgentData.brands[1]
             && window.navigator.userAgentData.brands[1].brand.indexOf('Safari')) > -1 // check if Safari brand exists
             : /^((?!chrom|android|kindle|crios|fxios).)*version.+safari/i.test(window.navigator.userAgent.toLowerCase());
-        this.isIOSDevice = typeof uaDataIsMobile === 'boolean' // browser supports "Client Hints"
+        this.isiOSDevice = typeof uaDataIsMobile === 'boolean' // browser supports "Client Hints"
             ? window.navigator.userAgentData.platform
             && /ipad|ipod|iphone|ios|macos|macintel/i.test(window.navigator.userAgentData.platform.toLowerCase())
             && isTouch

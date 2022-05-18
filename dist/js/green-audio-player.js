@@ -41,7 +41,7 @@ var GreenAudioPlayer = /*#__PURE__*/function () {
     this.isSafari = typeof uaDataIsMobile === 'boolean' // browser supports "Client Hints"
     ? (window.navigator.userAgentData.brands[1] && window.navigator.userAgentData.brands[1].brand.indexOf('Safari')) > -1 // check if Safari brand exists
     : /^((?!chrom|android|kindle|crios|fxios).)*version.+safari/i.test(window.navigator.userAgent.toLowerCase());
-    this.isIOSDevice = typeof uaDataIsMobile === 'boolean' // browser supports "Client Hints"
+    this.isiOSDevice = typeof uaDataIsMobile === 'boolean' // browser supports "Client Hints"
     ? window.navigator.userAgentData.platform && /ipad|ipod|iphone|ios|macos|macintel/i.test(window.navigator.userAgentData.platform.toLowerCase()) && isTouch : isTouch && /macos|macintel/i.test(window.navigator.userAgent.toLowerCase()) || /ipad|ipod|iphone/i.test(window.navigator.userAgent.toLowerCase());
     this.isDevice = typeof uaDataIsMobile === 'boolean' // browser supports "Client Hints"
     ? window.navigator.userAgentData.mobile || isTouch // all mobiles and tablets
