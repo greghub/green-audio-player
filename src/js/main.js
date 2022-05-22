@@ -101,10 +101,6 @@ class GreenAudioPlayer {
         this.overcomeAppleLimitations();
         this.disableVolumeControls(); // mouseless devices
 
-        if ('data-duration' in this.player.attributes) {
-            self.totalTime.textContent = GreenAudioPlayer.formatTime(this.player.getAttribute('data-duration'));
-        }
-
         if ('autoplay' in this.player.attributes) {
             const promise = this.player.play();
             if (promise !== undefined) {
@@ -206,9 +202,12 @@ class GreenAudioPlayer {
                     if (self.paused === false) self.togglePlay();
                 }
                 window.addEventListener('mouseup', () => {
-                    if (handleMethod === 'rewind' && self.p > 0) {
+                    if (handleMethod === 'rewind' && self.p > 0
+                        && self.player.currentTime > 0) {
                         GreenAudioPlayer.playPlayer(self.player);
                         self.p = 0;
+                    } else if (!self.player.currentTime > 0) {
+                        GreenAudioPlayer.pausePlayer(self.player);
                     }
                     self.currentlyDragged = false;
                     window.removeEventListener('mousemove', listener, false);
@@ -233,9 +232,12 @@ class GreenAudioPlayer {
                     if (self.paused === false) self.togglePlay();
                 }
                 window.addEventListener('touchend', () => {
-                    if (handleMethod === 'rewind' && self.p > 0) {
+                    if (handleMethod === 'rewind' && self.p > 0
+                        && self.player.currentTime > 0) {
                         GreenAudioPlayer.playPlayer(self.player);
                         self.p = 0;
+                    } else if (!self.player.currentTime > 0) {
+                        GreenAudioPlayer.pausePlayer(self.player);
                     }
                     self.currentlyDragged = false;
                     window.removeEventListener('touchmove', listener, false);
@@ -257,11 +259,26 @@ class GreenAudioPlayer {
         this.player.addEventListener('timeupdate', this.updateProgress.bind(self));
         this.player.addEventListener('volumechange', this.updateVolume.bind(self));
         this.player.volume = 0.81;
-        this.player.addEventListener('loadedmetadata', () => {
-            self.totalTime.textContent = GreenAudioPlayer.formatTime(self.player.duration);
-        });
-        this.player.addEventListener('seeking', this.showLoadingIndicator.bind(self));
-        this.player.addEventListener('seeked', this.hideLoadingIndicator.bind(self));
+        if ('data-duration' in this.player.attributes) {
+            this.sampleTime = this.player.getAttribute('data-duration'); // duration from <audio> tag
+            self.totalTime.textContent = GreenAudioPlayer.formatTime(this.sampleTime);
+            self.durationLow = this.sampleTime;
+            self.durationHigh = this.sampleTime;
+        }
+        if (!this.sampleTime) {
+            this.player.addEventListener('loadedmetadata', () => { // estimated time
+                if (self.player.duration) {
+                    self.durationLow = Math.floor(self.player.duration);
+                    self.durationHigh = Math.ceil(self.player.duration);
+                    self.totalTime.textContent = GreenAudioPlayer.formatTime(self.durationLow);
+                } else {
+                    self.durationLow = 0;
+                    self.durationHigh = 0;
+                }
+            });
+        }
+        this.player.addEventListener('waiting', this.showLoadingIndicator.bind(self));
+        this.player.addEventListener('playing', this.hideLoadingIndicator.bind(self));
         this.player.addEventListener('canplay', this.hideLoadingIndicator.bind(self));
         this.player.addEventListener('ended', () => {
             GreenAudioPlayer.pausePlayer(self.player, 'ended');
@@ -341,8 +358,11 @@ class GreenAudioPlayer {
         const percent = (current / this.player.duration) * 100;
         this.progress.setAttribute('aria-valuenow', percent);
         this.progress.style.width = `${percent}%`;
-
         this.currentTime.textContent = GreenAudioPlayer.formatTime(current);
+        if (current > this.durationLow) {
+            this.totalTime.textContent = GreenAudioPlayer.formatTime(current);
+            this.durationLow = this.player.currentTime;
+        }
     }
 
     updateVolume() {
@@ -396,7 +416,7 @@ class GreenAudioPlayer {
 
     rewind(event) {
         if (this.player.seekable && this.player.seekable.length) { // no seek if not (pre)loaded
-            if (this.inRange(event)) {
+            if (this.player.currentTime <= this.durationLow) {
                 this.player.currentTime = this.player.duration * this.getCoefficient(event);
             }
         }
