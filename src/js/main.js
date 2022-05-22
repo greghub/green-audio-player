@@ -206,8 +206,6 @@ class GreenAudioPlayer {
                         && self.player.currentTime > 0) {
                         GreenAudioPlayer.playPlayer(self.player);
                         self.p = 0;
-                    } else if (!self.player.currentTime > 0) {
-                        GreenAudioPlayer.pausePlayer(self.player);
                     }
                     self.currentlyDragged = false;
                     window.removeEventListener('mousemove', listener, false);
@@ -236,8 +234,6 @@ class GreenAudioPlayer {
                         && self.player.currentTime > 0) {
                         GreenAudioPlayer.playPlayer(self.player);
                         self.p = 0;
-                    } else if (!self.player.currentTime > 0) {
-                        GreenAudioPlayer.pausePlayer(self.player);
                     }
                     self.currentlyDragged = false;
                     window.removeEventListener('touchmove', listener, false);
@@ -416,7 +412,7 @@ class GreenAudioPlayer {
 
     rewind(event) {
         if (this.player.seekable && this.player.seekable.length) { // no seek if not (pre)loaded
-            if (this.player.currentTime <= this.durationLow) {
+            if (this.inRange(event)) {
                 this.player.currentTime = this.player.duration * this.getCoefficient(event);
             }
         }

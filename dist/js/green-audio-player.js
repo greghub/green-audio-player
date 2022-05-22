@@ -171,8 +171,6 @@ var GreenAudioPlayer = /*#__PURE__*/function () {
             if (handleMethod === 'rewind' && self.p > 0 && self.player.currentTime > 0) {
               GreenAudioPlayer.playPlayer(self.player);
               self.p = 0;
-            } else if (!self.player.currentTime > 0) {
-              GreenAudioPlayer.pausePlayer(self.player);
             }
 
             self.currentlyDragged = false;
@@ -205,8 +203,6 @@ var GreenAudioPlayer = /*#__PURE__*/function () {
             if (handleMethod === 'rewind' && self.p > 0 && self.player.currentTime > 0) {
               GreenAudioPlayer.playPlayer(self.player);
               self.p = 0;
-            } else if (!self.player.currentTime > 0) {
-              GreenAudioPlayer.pausePlayer(self.player);
             }
 
             self.currentlyDragged = false;
@@ -409,7 +405,7 @@ var GreenAudioPlayer = /*#__PURE__*/function () {
     value: function rewind(event) {
       if (this.player.seekable && this.player.seekable.length) {
         // no seek if not (pre)loaded
-        if (this.player.currentTime <= this.durationLow) {
+        if (this.inRange(event)) {
           this.player.currentTime = this.player.duration * this.getCoefficient(event);
         }
       }
