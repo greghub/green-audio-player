@@ -28,6 +28,12 @@
   .green-audio-player svg,
   .green-audio-player img {
     display: block; }
+    .green-audio-player svg:focus,
+    .green-audio-player img:focus {
+      outline: dotted 1px #999; }
+    .green-audio-player svg:hover,
+    .green-audio-player img:hover {
+      outline: none; }
   .green-audio-player .holder {
     position: relative; }
     .green-audio-player .holder .loading .loading__spinner {

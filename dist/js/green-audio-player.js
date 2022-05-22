@@ -34,10 +34,24 @@ var GreenAudioPlayer = /*#__PURE__*/function () {
     var audioElement = this.audioPlayer.innerHTML;
     this.audioPlayer.classList.add('green-audio-player');
     this.audioPlayer.innerHTML = GreenAudioPlayer.getTemplate() + audioElement;
-    this.isDevice = /ipad|iphone|ipod|android/i.test(window.navigator.userAgent.toLowerCase()) && !window.MSStream;
+    var isTouch = window.matchMedia && window.matchMedia('(pointer:coarse)').matches; // primary pointer is touch
+
+    var isDesktopIE11 = window.MSInputMethodContext && document.documentMode && /tablet/i.test(window.navigator.userAgent.toLowerCase());
+    var uaDataIsMobile = window.navigator.userAgentData && window.navigator.userAgentData.mobile;
+    this.isSafari = typeof uaDataIsMobile === 'boolean' // browser supports "Client Hints"
+    ? (window.navigator.userAgentData.brands[1] && window.navigator.userAgentData.brands[1].brand.indexOf('Safari')) > -1 // check if Safari brand exists
+    : /^((?!chrom|android|kindle|crios|fxios).)*version.+safari/i.test(window.navigator.userAgent.toLowerCase());
+    this.isiOSDevice = typeof uaDataIsMobile === 'boolean' // browser supports "Client Hints"
+    ? window.navigator.userAgentData.platform && /ipad|ipod|iphone|ios|macos|macintel/i.test(window.navigator.userAgentData.platform.toLowerCase()) && isTouch : isTouch && /macos|macintel/i.test(window.navigator.userAgent.toLowerCase()) || /ipad|ipod|iphone/i.test(window.navigator.userAgent.toLowerCase());
+    this.isDevice = typeof uaDataIsMobile === 'boolean' // browser supports "Client Hints"
+    ? window.navigator.userAgentData.mobile || isTouch // all mobiles and tablets
+    : isTouch || !isDesktopIE11 // IE desktop's User Agent string claims to be "Tablet"
+    && /android|iphone|ipod|ipad|tablet/i.test(window.navigator.userAgent.toLowerCase()); // test User Agents here
+
     this.playPauseBtn = this.audioPlayer.querySelector('.play-pause-btn');
     this.loading = this.audioPlayer.querySelector('.loading');
     this.sliders = this.audioPlayer.querySelectorAll('.slider');
+    this.pins = this.audioPlayer.querySelectorAll('.pin');
     this.progress = this.audioPlayer.querySelector('.controls__progress');
     this.volumeBtn = this.audioPlayer.querySelector('.volume__button');
     this.volumeControls = this.audioPlayer.querySelector('.volume__controls');
@@ -95,7 +109,7 @@ var GreenAudioPlayer = /*#__PURE__*/function () {
       this.downloadLink.setAttribute('title', this.labels.download);
     }
 
-    if (opts.outlineControls || false) {
+    if (!this.isDevice && (opts.outlineControls || false)) {
       this.audioPlayer.classList.add('player-accessible');
     }
 
@@ -105,7 +119,8 @@ var GreenAudioPlayer = /*#__PURE__*/function () {
 
     this.initEvents();
     this.directionAware();
-    this.overcomeIosLimitations();
+    this.overcomeAppleLimitations();
+    this.disableVolumeControls(); // mouseless devices
 
     if ('autoplay' in this.player.attributes) {
       var promise = this.player.play();
@@ -133,21 +148,29 @@ var GreenAudioPlayer = /*#__PURE__*/function () {
     key: "initEvents",
     value: function initEvents() {
       var self = this;
+      self.p = 0;
       self.audioPlayer.addEventListener('mousedown', function (event) {
         if (self.isDraggable(event.target)) {
           self.currentlyDragged = event.target;
           var handleMethod = self.currentlyDragged.dataset.method;
+
+          if (handleMethod === 'rewind' && self.player.paused === false) {
+            GreenAudioPlayer.pausePlayer(self.player, 'rewind');
+            self.p = 1;
+          }
+
           var listener = self[handleMethod].bind(self);
           window.addEventListener('mousemove', listener, false);
 
-          if (self.currentlyDragged.parentElement.parentElement === self.sliders[0]) {
+          if (handleMethod === 'rewind') {
             self.paused = self.player.paused;
             if (self.paused === false) self.togglePlay();
           }
 
           window.addEventListener('mouseup', function () {
-            if (self.currentlyDragged !== false && self.currentlyDragged.parentElement.parentElement === self.sliders[0] && self.paused !== self.player.paused) {
-              self.togglePlay();
+            if (handleMethod === 'rewind' && self.p > 0 && self.player.currentTime > 0) {
+              GreenAudioPlayer.playPlayer(self.player);
+              self.p = 0;
             }
 
             self.currentlyDragged = false;
@@ -162,34 +185,71 @@ var GreenAudioPlayer = /*#__PURE__*/function () {
 
           self.currentlyDragged = _event$targetTouches[0];
           var handleMethod = self.currentlyDragged.target.dataset.method;
+
+          if (handleMethod === 'rewind' && self.player.paused === false) {
+            GreenAudioPlayer.pausePlayer(self.player, 'rewind');
+            self.p = 1;
+          }
+
           var listener = self[handleMethod].bind(self);
           window.addEventListener('touchmove', listener, false);
 
-          if (self.currentlyDragged.parentElement.parentElement === self.sliders[0]) {
+          if (handleMethod === 'rewind') {
             self.paused = self.player.paused;
             if (self.paused === false) self.togglePlay();
           }
 
           window.addEventListener('touchend', function () {
-            if (self.currentlyDragged !== false && self.currentlyDragged.parentElement.parentElement === self.sliders[0] && self.paused !== self.player.paused) {
-              self.togglePlay();
+            if (handleMethod === 'rewind' && self.p > 0 && self.player.currentTime > 0) {
+              GreenAudioPlayer.playPlayer(self.player);
+              self.p = 0;
             }
 
             self.currentlyDragged = false;
             window.removeEventListener('touchmove', listener, false);
           }, false);
-          event.preventDefault();
+          if (event.cancelable) event.preventDefault(); // prevents scroll from interfering
+        }
+      }, {
+        passive: false
+      }); // passive "true" makes touch more responsive, sometimes bad
+
+      window.addEventListener('visibilitychange', function () {
+        if (!document.hidden && self.player.paused === true && self.player.duration >= 0) {
+          GreenAudioPlayer.pausePlayer(self.player, 'toggle');
+          self.playPauseBtn.setAttribute('aria-label', self.labels.play);
+          self.hasSetAttribute(self.playPauseBtn, 'title', self.labels.play);
         }
       });
       this.playPauseBtn.addEventListener('click', this.togglePlay.bind(self));
       this.player.addEventListener('timeupdate', this.updateProgress.bind(self));
       this.player.addEventListener('volumechange', this.updateVolume.bind(self));
       this.player.volume = 0.81;
-      this.player.addEventListener('loadedmetadata', function () {
-        self.totalTime.textContent = GreenAudioPlayer.formatTime(self.player.duration);
-      });
-      this.player.addEventListener('seeking', this.showLoadingIndicator.bind(self));
-      this.player.addEventListener('seeked', this.hideLoadingIndicator.bind(self));
+
+      if ('data-duration' in this.player.attributes) {
+        this.sampleTime = this.player.getAttribute('data-duration'); // duration from <audio> tag
+
+        self.totalTime.textContent = GreenAudioPlayer.formatTime(this.sampleTime);
+        self.durationLow = this.sampleTime;
+        self.durationHigh = this.sampleTime;
+      }
+
+      if (!this.sampleTime) {
+        this.player.addEventListener('loadedmetadata', function () {
+          // estimated time
+          if (self.player.duration) {
+            self.durationLow = Math.floor(self.player.duration);
+            self.durationHigh = Math.ceil(self.player.duration);
+            self.totalTime.textContent = GreenAudioPlayer.formatTime(self.durationLow);
+          } else {
+            self.durationLow = 0;
+            self.durationHigh = 0;
+          }
+        });
+      }
+
+      this.player.addEventListener('waiting', this.showLoadingIndicator.bind(self));
+      this.player.addEventListener('playing', this.hideLoadingIndicator.bind(self));
       this.player.addEventListener('canplay', this.hideLoadingIndicator.bind(self));
       this.player.addEventListener('ended', function () {
         GreenAudioPlayer.pausePlayer(self.player, 'ended');
@@ -207,16 +267,24 @@ var GreenAudioPlayer = /*#__PURE__*/function () {
       }
 
       this.downloadLink.addEventListener('click', this.downloadAudio.bind(self));
+      this.downloadLink.addEventListener('mouseover', this.downloadAudio.bind(self));
+      this.downloadLink.addEventListener('contextmenu', this.downloadAudio.bind(self));
     }
   }, {
-    key: "overcomeIosLimitations",
-    value: function overcomeIosLimitations() {
+    key: "overcomeAppleLimitations",
+    value: function overcomeAppleLimitations() {
       var self = this;
 
-      if (this.isDevice) {
-        // iOS does not support "canplay" event
-        this.player.addEventListener('loadedmetadata', this.hideLoadingIndicator.bind(self)); // iOS does not let "volume" property to be set programmatically
-
+      if (this.isSafari) {
+        // MacOS and iOS Safari do not support "canplay" event
+        this.player.addEventListener('loadedmetadata', this.hideLoadingIndicator.bind(self));
+      }
+    }
+  }, {
+    key: "disableVolumeControls",
+    value: function disableVolumeControls() {
+      if (this.isiOSDevice) {
+        // iOS does not allow "volume" property to be set programmatically
         this.audioPlayer.querySelector('.volume').style.display = 'none';
         this.audioPlayer.querySelector('.controls').style.marginRight = '0';
       }
@@ -268,6 +336,11 @@ var GreenAudioPlayer = /*#__PURE__*/function () {
       this.progress.setAttribute('aria-valuenow', percent);
       this.progress.style.width = "".concat(percent, "%");
       this.currentTime.textContent = GreenAudioPlayer.formatTime(current);
+
+      if (current > this.durationLow) {
+        this.totalTime.textContent = GreenAudioPlayer.formatTime(current);
+        this.durationLow = this.player.currentTime;
+      }
     }
   }, {
     key: "updateVolume",
@@ -376,6 +449,9 @@ var GreenAudioPlayer = /*#__PURE__*/function () {
 
       if (!this.player.duration) {
         self.playPauseBtn.style.visibility = 'hidden';
+        self.playPauseBtn.style.pointerEvents = 'none';
+        self.pins[0].style.pointerEvents = 'none';
+        self.sliders[0].style.pointerEvents = 'none';
         self.loading.style.visibility = 'visible';
       }
     }
@@ -426,7 +502,7 @@ var GreenAudioPlayer = /*#__PURE__*/function () {
   }, {
     key: "setVolume",
     value: function setVolume(volume) {
-      if (this.isDevice) return;
+      if (this.isiOSDevice) return;
       var vol = this.player.volume;
 
       if (vol + volume >= 0 && vol + volume < 1) {
@@ -521,12 +597,16 @@ var GreenAudioPlayer = /*#__PURE__*/function () {
     key: "showLoadingIndicator",
     value: function showLoadingIndicator() {
       this.playPauseBtn.style.visibility = 'hidden';
+      this.playPauseBtn.style.pointerEvents = 'none';
       this.loading.style.visibility = 'visible';
     }
   }, {
     key: "hideLoadingIndicator",
     value: function hideLoadingIndicator() {
       this.playPauseBtn.style.visibility = 'visible';
+      this.playPauseBtn.style.pointerEvents = 'auto';
+      this.pins[0].style.pointerEvents = 'auto';
+      this.sliders[0].style.pointerEvents = 'auto';
       this.loading.style.visibility = 'hidden';
     }
   }, {
@@ -558,8 +638,9 @@ var GreenAudioPlayer = /*#__PURE__*/function () {
   }], [{
     key: "init",
     value: function init(options) {
+      /* use prototype constructor compatible with IE foreach */
       var players = document.querySelectorAll(options.selector);
-      players.forEach(function (player) {
+      Array.prototype.slice.call(players).forEach(function (player) {
         /* eslint-disable no-new */
         new GreenAudioPlayer(player, options);
       });
@@ -597,6 +678,13 @@ var GreenAudioPlayer = /*#__PURE__*/function () {
 
       for (var i = 0; i < players.length; i++) {
         GreenAudioPlayer.pausePlayer(players[i]);
+        var holderDiv = players[i].parentElement.querySelector('.holder');
+        var playPauseBtn = holderDiv.querySelector('.play-pause-btn');
+        playPauseBtn.setAttribute('aria-label', 'Play');
+
+        if (playPauseBtn.attributes.title) {
+          playPauseBtn.setAttribute('title', 'Play');
+        }
       }
     }
   }]);

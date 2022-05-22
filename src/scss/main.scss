@@ -32,6 +32,14 @@
 	svg,
 	img {
 		display: block;
+
+		&:focus {
+			outline: dotted 1px $gray;
+		}
+
+		&:hover {
+			outline: none;
+		}
 	}
 
 	.holder {
