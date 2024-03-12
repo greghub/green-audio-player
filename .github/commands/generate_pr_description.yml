@@ -1,8 +1,8 @@
 trigger: generate_pr_description # <-- 👋 pick a trigger
 title: Generate PR Description   # <-- 👋 pick a title
 
-surfaces:
-   - pull_request
+#surfaces:
+#   - pull_request
 
 description: Generate a PR Description using Generative AI
 steps:
