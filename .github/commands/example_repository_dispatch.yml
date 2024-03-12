@@ -1,0 +1,7 @@
+trigger: example_repository_dispatch
+title: Example repository_dispatch
+description: An example of how to use the repository_dispatch step
+steps:
+  - type: repository_dispatch
+    eventType: open_pr
+    # repository: monalisa/octo-demo
