@@ -40,7 +40,7 @@ jobs:
             github.rest.pulls.update({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              pull_number: context.payload.pull_request.number
+              pull_number: context.payload.pull_request.number,
               body: md
             });
       #- name: Find Comment
