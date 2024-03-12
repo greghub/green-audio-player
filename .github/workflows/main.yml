@@ -1,0 +1,15 @@
+name: Generate PR Description
+on: workflow_dispatch
+jobs: 
+  call-api: 
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call PR Generation API
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: 'https://us-central1-alert-vim-413707.cloudfunctions.net/generate_pr_description'
+          method: 'POST'
+          # username: ${{ secrets.AWX_USER }}
+          # password: ${{ secrets.AWX_PASSWORD }}
+          # customHeaders: '{"Content-Type": "application/json"}'
+          data: '{"git_repo_url": "${{ github.server_url}}${{github.repository }}", "base_branch_name": "master", "branch_name" : "${{ github.ref_name }}"}'
