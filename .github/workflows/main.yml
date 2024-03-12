@@ -36,7 +36,7 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            const md = fs.readFileSync('./response.md');
+            const md = fs.readFileSync('./response.md', 'utf8');
             github.rest.pulls.update({
               owner: context.repo.owner,
               repo: context.repo.repo,
