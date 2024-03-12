@@ -1,52 +1,49 @@
 # Learn more about the syntax here:
 # https://docs.github.com/early-access/github/save-time-with-slash-commands/syntax-for-user-defined-slash-commands
 ---
-trigger: my_command # <-- 👋 pick a trigger
-title: My command   # <-- 👋 pick a title
-# Works everywhere by default. Uncomment to limit it to certain surfaces.
-# surfaces:
-#   - issue
-#   - pull_request
-#   - discussions
-description: This is an example
+trigger: generate_pr_description # <-- 👋 pick a trigger
+title: Generate PR Description   # <-- 👋 pick a title
 
-# Each command has one or more steps. You can add up to 25 steps.
+surfaces:
+   - pull_request
+
+description: Generate a PR Description using Generative AI
 steps:
   # This displays a menu, similar to typing `@`.
-  - type: menu
-    id: some_options
-    label: Options
-    options:
-      - Item 1
-      - Item 2
-      - Item 3
+  # - type: menu
+  #   id: some_options
+  #   label: Options
+  #   options:
+  #     - Item 1
+  #     - Item 2
+  #     - Item 3
   # This displays a form with a dropdown, text input, and markdown editor.
-  - type: form
-    style: modal
-    body:
-      - type: dropdown
-        attributes:
-          label: Priority
-          options:
-          - label: "🟢 Normal"
-          - label: "⚠️ Important"
-          - label: "💥 Emergency"
-      - type: input
-        attributes:
-          label: Name
-          format: text
-      - type: textarea
-        attributes:
-          label: Message
-          placeholder: What happened?
+  # - type: form
+  #   style: modal
+  #   body:
+  #     - type: dropdown
+  #       attributes:
+  #         label: Priority
+  #         options:
+  #         - label: "🟢 Normal"
+  #         - label: "⚠️ Important"
+  #         - label: "💥 Emergency"
+  #     - type: input
+  #       attributes:
+  #         label: Name
+  #         format: text
+  #     - type: textarea
+  #       attributes:
+  #         label: Message
+  #         placeholder: What happened?
   # You can use slash commands to run GitHub Actions using repository_dispatch.
   # Any input provided to menus or forms will be available from your workflow.
-  # - type: repository_dispatch
+  - type: repository_dispatch
   #   eventType: special_merge
   # You can insert markdown into the markdown editor. The template property is
   # processed as a Liquid template.
   - type: fill
     template: |-
-      Thank you for creating a slash command! See
+      Generating PR description...
       Here is the data you provided: {{data}}
       And here is some information about the command: {{command}}
