@@ -36,7 +36,7 @@ steps:
   # You can use slash commands to run GitHub Actions using repository_dispatch.
   # Any input provided to menus or forms will be available from your workflow.
   - type: repository_dispatch
-    eventType: pull_request
+    eventType: open_pr
   # You can insert markdown into the markdown editor. The template property is
   # processed as a Liquid template.
   - type: fill
