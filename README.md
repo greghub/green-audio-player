@@ -1,4 +1,4 @@
-# Green Audio Player by PG
+# Green Audio Player by PG aka Pierluigi
 
 ![npm](https://img.shields.io/npm/v/green-audio-player.svg)
 ![GitHub](https://img.shields.io/github/license/greghub/green-audio-player.svg)
