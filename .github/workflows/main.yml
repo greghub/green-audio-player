@@ -24,7 +24,7 @@ jobs:
           echo ${{ steps.request.outputs.response }}
           echo ${{ steps.request.outputs.headers }}
           echo ${{ steps.request.outputs.response }} > response.out
-          result=$(cat response.md)
+          result=$(cat response.out)
           result="${result//'%'/'%25'}"
           result="${result//$'\n'/'%0A'}"
           result="${result//$'\r'/'%0D'}" 
