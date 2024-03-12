@@ -16,7 +16,7 @@ jobs:
           # bearerToken: ${{ secrets.BEARER_TOKEN }}
           # customHeaders: '{"Content-Type": "application/json"}'
           timeout: 60000
-          data: '{"git_repo_url": "${{ github.server_url}}/${{github.repository }}", "base_branch_name": "${{ github.event.default_branch }}", "branch_name" : "${{ github.ref_name }}"}'
+          data: '{"git_repo_url": "${{ github.server_url}}/${{github.repository }}", "base_branch_name": "${{ github.event.repository.default_branch }}", "branch_name" : "${{ github.ref_name }}"}'
       - name: Show Response
         run: |
           echo ${{ steps.request.outputs.response }}
