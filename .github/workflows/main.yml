@@ -30,11 +30,17 @@ jobs:
           result="${result//$'\n'/'%0A'}"
           result="${result//$'\r'/'%0D'}" 
           echo -e $result > response.md
+      - name: Find Comment
+        uses: peter-evans/find-comment@v3
+        id: fc
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
       - name: Post Comment
         uses: peter-evans/create-or-update-comment@v4
         env: 
           PR_DESCRIPTION: ${{ steps.request.outputs.result }}
         with:
-          issue-number:  ${{ github.event.pull_request.number }}
+          #issue-number:  ${{ github.event.pull_request.number }}
+          comment-id: ${{ steps.fc.outputs.comment-id }}
           body-path: 'response.md'
           edit-mode: append
