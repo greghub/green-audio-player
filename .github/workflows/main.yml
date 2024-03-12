@@ -1,5 +1,7 @@
 name: Generate PR Description
-on: repository_dispatch
+on:
+  repository_dispatch:
+    types: open_pr
 jobs: 
   call-api: 
     runs-on: ubuntu-latest
