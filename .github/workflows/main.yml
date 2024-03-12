@@ -28,7 +28,7 @@ jobs:
           result="${result//'%'/'%25'}"
           result="${result//$'\n'/'%0A'}"
           result="${result//$'\r'/'%0D'}" 
-          echo $result > response.md
+          echo -e $result > response.md
       - name: Post Comment
         uses: peter-evans/create-or-update-comment@v4
         env: 
