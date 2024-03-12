@@ -12,4 +12,4 @@ jobs:
           # username: ${{ secrets.AWX_USER }}
           # password: ${{ secrets.AWX_PASSWORD }}
           # customHeaders: '{"Content-Type": "application/json"}'
-          data: '{"git_repo_url": "${{ github.server_url}}${{github.repository }}", "base_branch_name": "master", "branch_name" : "${{ github.ref_name }}"}'
+          data: '{"git_repo_url": "${{ github.server_url}}/${{github.repository }}", "base_branch_name": "${{ github.head_ref }}", "branch_name" : "${{ github.ref_name }}"}'
