@@ -26,6 +26,7 @@ jobs:
       - name: Post Comment
         uses: peter-evans/create-or-update-comment@v4
         with:
+          issue-number: ${{github.event.number}}
           body: |
             This is a multi-line test comment
             - With GitHub **Markdown** :sparkles:
