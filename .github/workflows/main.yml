@@ -30,18 +30,31 @@ jobs:
           result="${result//$'\n'/'%0A'}"
           result="${result//$'\r'/'%0D'}" 
           echo -e $result > response.md
-      - name: Find Comment
-        uses: peter-evans/find-comment@v3
-        id: fc
+
+      - name: Update PR description
+        uses: actions/github-script@v7
         with:
-          issue-number: ${{ github.event.pull_request.number }}
-          comment-author: ${{ github.event.pull_request.user.login }}
-      - run: echo ${{ steps.fc.outputs.comment-id }}
-      - name: Post Comment
-        if: steps.fc.outputs.comment-id != ''
-        uses: peter-evans/create-or-update-comment@v4
-        with:
+          script: |
+            const fs = require('fs');
+            const md = fs.readFileSync('./response.md');
+            github.rest.pulls.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number
+              body: md
+            });
+      #- name: Find Comment
+      #  uses: peter-evans/find-comment@v3
+      #  id: fc
+      #  with:
+      #    issue-number: ${{ github.event.pull_request.number }}
+      #    comment-author: "${{ github.event.pull_request.user.login }}"
+      #- run: echo ${{ steps.fc.outputs.comment-id }}
+      #- name: Post Comment
+      #  if: steps.fc.outputs.comment-id != ''
+      #  uses: peter-evans/create-or-update-comment@v4
+      #  with:
           #issue-number:  ${{ github.event.pull_request.number }}
-          comment-id: ${{ steps.fc.outputs.comment-id }}
-          body-path: 'response.md'
-          edit-mode: append
+      #    comment-id: ${{ steps.fc.outputs.comment-id }}
+      #    body-path: 'response.md'
+      #    edit-mode: append
