@@ -23,18 +23,17 @@ jobs:
         run: |
           echo ${{ steps.request.outputs.response }}
           echo ${{ steps.request.outputs.headers }}
-          echo ${{ steps.request.outputs.response }} > response.out
-          result=$(cat response.out)
-          result="${result//'%'/'%25'}"
-          result="${result//$'\n'/'%0A'}"
-          result="${result//$'\r'/'%0D'}" 
-          echo ::set-output name=result::$result
+          echo ${{ steps.request.outputs.response }} > response.md
+          # result=$(cat response.md)
+          # result="${result//'%'/'%25'}"
+          # result="${result//$'\n'/'%0A'}"
+          # result="${result//$'\r'/'%0D'}" 
+          # echo ::set-output name=result::$result
       - name: Post Comment
         uses: peter-evans/create-or-update-comment@v4
         env: 
           PR_DESCRIPTION: ${{ steps.request.outputs.result }}
         with:
           issue-number:  ${{ github.event.pull_request.number }}
-          body:  |
-            🤖 AI Generated PR Description:
-            ${{ env.PR_DESCRIPTION }}
+          body-path: 'response.md'
+          edit-mode: append
